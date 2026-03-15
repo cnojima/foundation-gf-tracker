@@ -1,715 +1,1587 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foundation GF — Commander's Log</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#030610;--bg2:#080e1f;--bg3:#0d1530;
-  --card:rgba(10,20,50,0.85);--card2:rgba(15,30,70,0.6);
-  --border:rgba(0,200,230,0.18);--border2:rgba(0,200,230,0.35);
-  --cyan:#00d9f5;--orange:#ff8c00;--gold:#ffd033;
-  --red:#ff4466;--green:#00e676;--purple:#a855f7;
-  --muted:rgba(160,190,220,0.5);--text:#bdd0e8;--bright:#e0eeff;
-  --hd:'Orbitron',monospace;--mono:'Share Tech Mono',monospace;--body:'Inter',sans-serif;
-}
-body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;display:flex;flex-direction:column}
-body::before{content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse at 15% 50%,rgba(0,80,160,0.07) 0%,transparent 60%),
-             radial-gradient(ellipse at 85% 20%,rgba(80,0,140,0.07) 0%,transparent 60%);
-  pointer-events:none;z-index:0}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundation GF — Commander's Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* HEADER */
-header{position:sticky;top:0;z-index:100;background:rgba(3,6,16,0.96);
-  border-bottom:1px solid var(--border);display:flex;align-items:center;
-  gap:1rem;padding:.6rem 1.2rem;backdrop-filter:blur(12px)}
-header h1{font-family:var(--hd);font-size:1rem;font-weight:800;letter-spacing:.12em;
-  color:var(--cyan);text-shadow:0 0 20px rgba(0,217,245,0.4);white-space:nowrap}
-header h1 span{color:var(--orange)}
-.res-bar{display:flex;gap:.8rem;margin-left:auto;flex-wrap:wrap}
-.res-pill{display:flex;align-items:center;gap:.4rem;background:var(--bg3);
-  border:1px solid var(--border);border-radius:999px;padding:.2rem .7rem;
-  font-family:var(--mono);font-size:.78rem;cursor:pointer;transition:.2s}
-.res-pill:hover{border-color:var(--cyan);background:var(--card2)}
-.res-pill .lbl{color:var(--muted);font-size:.7rem}
-.res-pill input{background:none;border:none;color:var(--bright);font-family:var(--mono);
-  font-size:.85rem;width:90px;outline:none;text-align:right}
+    :root {
+      --bg: #030610;
+      --bg2: #080e1f;
+      --bg3: #0d1530;
+      --card: rgba(10, 20, 50, 0.85);
+      --card2: rgba(15, 30, 70, 0.6);
+      --border: rgba(0, 200, 230, 0.18);
+      --border2: rgba(0, 200, 230, 0.35);
+      --cyan: #00d9f5;
+      --orange: #ff8c00;
+      --gold: #ffd033;
+      --red: #ff4466;
+      --green: #00e676;
+      --purple: #a855f7;
+      --muted: rgba(160, 190, 220, 0.5);
+      --text: #bdd0e8;
+      --bright: #e0eeff;
+      --hd: 'Orbitron', monospace;
+      --mono: 'Share Tech Mono', monospace;
+      --body: 'Inter', sans-serif;
+    }
 
-/* NAV */
-nav{display:flex;gap:.25rem;padding:.5rem 1.2rem;background:var(--bg2);
-  border-bottom:1px solid var(--border)}
-.nav-btn{font-family:var(--hd);font-size:.7rem;letter-spacing:.08em;
-  background:none;border:1px solid transparent;border-radius:4px;
-  color:var(--muted);padding:.35rem .8rem;cursor:pointer;transition:.2s}
-.nav-btn:hover{color:var(--cyan);border-color:var(--border)}
-.nav-btn.active{color:var(--cyan);border-color:var(--cyan);
-  background:rgba(0,217,245,0.08);text-shadow:0 0 10px rgba(0,217,245,0.5)}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
 
-/* MAIN */
-main{flex:1;padding:1.2rem;position:relative;z-index:1;max-width:1400px;margin:0 auto;width:100%}
-.view{display:none}.view.active{display:block}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 15% 50%, rgba(0, 80, 160, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 20%, rgba(80, 0, 140, 0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0
+    }
 
-/* BUILDING GRID */
-.buildings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
-.b-card{background:var(--card);border:1px solid var(--border);border-radius:8px;
-  padding:.9rem;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
-.b-card::before{content:'';position:absolute;inset:0;opacity:0;
-  background:linear-gradient(135deg,rgba(0,217,245,0.06),transparent);transition:.3s}
-.b-card:hover{border-color:var(--border2);transform:translateY(-1px)}
-.b-card:hover::before{opacity:1}
-.b-card.maxed{border-color:rgba(0,230,118,0.3)}
-.b-card.maxed .b-lvl{color:var(--green)}
-.b-card-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem}
-.b-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;
-  justify-content:center;font-size:1rem;flex-shrink:0}
-.b-name{font-family:var(--hd);font-size:.62rem;letter-spacing:.06em;
-  color:var(--bright);line-height:1.3}
-.b-lvl-row{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.5rem}
-.b-lvl{font-family:var(--mono);font-size:1.8rem;color:var(--cyan);line-height:1}
-.b-lvl-label{font-size:.65rem;color:var(--muted)}
-.b-goal{font-family:var(--mono);font-size:.85rem;color:var(--gold)}
-.b-progress{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-bottom:.5rem}
-.b-progress-bar{height:100%;border-radius:2px;transition:.4s}
-.b-next-cost{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
-.b-next-cost .cost-val{color:var(--orange)}
-.b-afford{font-size:.6rem;font-weight:500;margin-top:.3rem;padding:.1rem .4rem;
-  border-radius:3px;display:inline-block}
-.b-afford.yes{background:rgba(0,230,118,0.15);color:var(--green)}
-.b-afford.no{background:rgba(255,68,102,0.12);color:var(--red)}
-.b-afford.nodata{background:rgba(160,190,220,0.1);color:var(--muted)}
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(3, 6, 16, 0.96);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .6rem 1.2rem;
+      backdrop-filter: blur(12px)
+    }
 
-/* LEVEL CONTROLS */
-.lvl-controls{display:flex;align-items:center;gap:.4rem;margin-top:.5rem}
-.lvl-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;
-  color:var(--cyan);font-size:1rem;width:24px;height:24px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-.lvl-btn:hover{background:rgba(0,217,245,0.15);border-color:var(--cyan)}
-.lvl-display{font-family:var(--mono);font-size:.8rem;color:var(--bright);
-  min-width:28px;text-align:center}
+    header h1 {
+      font-family: var(--hd);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0, 217, 245, 0.4);
+      white-space: nowrap
+    }
 
-/* DETAIL PANEL */
-.detail-overlay{display:none;position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px)}
-.detail-overlay.open{display:flex;align-items:center;justify-content:center;padding:1rem}
-.detail-panel{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;
-  max-width:600px;width:100%;max-height:85vh;overflow-y:auto;padding:1.5rem;
-  box-shadow:0 0 60px rgba(0,100,200,0.2)}
-.detail-panel::-webkit-scrollbar{width:4px}
-.detail-panel::-webkit-scrollbar-track{background:transparent}
-.detail-panel::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.dp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.2rem}
-.dp-title{font-family:var(--hd);font-size:1.1rem;font-weight:800;color:var(--cyan)}
-.dp-desc{font-size:.8rem;color:var(--muted);margin-top:.25rem}
-.dp-close{background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:.2rem}
-.dp-close:hover{color:var(--red)}
-.dp-levels{display:flex;flex-direction:column;gap:.4rem}
-.dp-lvl-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr 90px;gap:.5rem;
-  align-items:center;font-family:var(--mono);font-size:.75rem;
-  padding:.35rem .5rem;border-radius:5px;border:1px solid transparent}
-.dp-lvl-row.header{color:var(--muted);font-size:.65rem;letter-spacing:.05em;
-  border-color:var(--border)}
-.dp-lvl-row.current{background:rgba(0,217,245,0.1);border-color:rgba(0,217,245,0.3)}
-.dp-lvl-row.future{background:rgba(255,140,0,0.06);border-color:rgba(255,140,0,0.2)}
-.dp-lvl-row.past{opacity:.45}
-.dp-lvl-row.no-data{opacity:.4;font-style:italic}
-.dp-lvl-num{color:var(--bright);font-weight:600}
-.dp-cost-m{color:#ff8a65}.dp-cost-w{color:#4fc3f7}.dp-cost-c{color:var(--gold)}
-.dp-time{color:var(--muted)}
-.dp-unlocks{font-size:.65rem;color:var(--green);font-family:var(--body)}
-.dp-reqs{font-size:.6rem;color:var(--red);font-family:var(--body);margin-top:.1rem}
-.dp-set-btn{background:var(--bg3);border:1px solid var(--border);border-radius:4px;
-  color:var(--cyan);font-family:var(--mono);font-size:.7rem;padding:.2rem .5rem;
-  cursor:pointer;transition:.15s;white-space:nowrap}
-.dp-set-btn:hover{background:rgba(0,217,245,0.15)}
+    header h1 span {
+      color: var(--orange)
+    }
 
-/* PLANNER */
-.planner-grid{display:grid;grid-template-columns:1fr 340px;gap:1.2rem}
-.planner-list{display:flex;flex-direction:column;gap:.6rem}
-.plan-card{background:var(--card);border:1px solid var(--border);border-radius:8px;
-  padding:.8rem 1rem;display:grid;grid-template-columns:130px 1fr auto;
-  gap:.8rem;align-items:center}
-.plan-card.no-goal{opacity:.55}
-.plan-name{font-family:var(--hd);font-size:.65rem;letter-spacing:.05em;color:var(--bright)}
-.plan-lvl-info{display:flex;align-items:center;gap:.6rem;font-family:var(--mono);font-size:.8rem}
-.plan-cur{color:var(--cyan)}.plan-arrow{color:var(--muted)}.plan-goal{color:var(--gold)}
-.plan-costs{display:flex;gap:.8rem;font-family:var(--mono);font-size:.72rem;margin-top:.3rem}
-.plan-goal-input{width:60px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:4px;color:var(--gold);font-family:var(--mono);font-size:.8rem;
-  padding:.2rem .4rem;text-align:center;outline:none}
-.plan-goal-input:focus{border-color:var(--gold)}
-.summary-panel{background:var(--card);border:1px solid var(--border);border-radius:8px;
-  padding:1rem;position:sticky;top:80px;height:fit-content}
-.summary-title{font-family:var(--hd);font-size:.75rem;letter-spacing:.08em;
-  color:var(--cyan);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
-.summary-res{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
-.summary-res-item{display:flex;justify-content:space-between;align-items:baseline}
-.summary-res-label{font-size:.75rem;color:var(--muted)}
-.summary-res-val{font-family:var(--mono);font-size:1.1rem}
-.summary-res-val.metal{color:#ff8a65}
-.summary-res-val.water{color:#4fc3f7}
-.summary-res-val.coins{color:var(--gold)}
-.summary-res-have{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
-.summary-res-need{font-size:.65rem;margin-top:.1rem}
-.summary-res-need.ok{color:var(--green)}.summary-res-need.short{color:var(--red)}
-.summary-time{background:var(--bg3);border-radius:6px;padding:.7rem;text-align:center;margin-top:.8rem}
-.summary-time-label{font-size:.65rem;color:var(--muted)}
-.summary-time-val{font-family:var(--mono);font-size:1rem;color:var(--bright);margin-top:.2rem}
-.clear-goals-btn{width:100%;margin-top:1rem;background:rgba(255,68,102,0.1);
-  border:1px solid rgba(255,68,102,0.3);border-radius:5px;color:var(--red);
-  font-family:var(--mono);font-size:.72rem;padding:.4rem;cursor:pointer;transition:.2s}
-.clear-goals-btn:hover{background:rgba(255,68,102,0.2)}
+    .res-bar {
+      display: flex;
+      gap: .8rem;
+      margin-left: auto;
+      flex-wrap: wrap
+    }
 
-/* RESOURCES */
-.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
-.res-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
-.res-card-title{font-family:var(--hd);font-size:.7rem;letter-spacing:.1em;
-  color:var(--muted);margin-bottom:.8rem}
-.res-input-big{width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:6px;color:var(--bright);font-family:var(--mono);font-size:1.4rem;
-  padding:.5rem .8rem;outline:none;text-align:right;transition:.2s}
-.res-input-big:focus{border-color:var(--cyan);background:var(--bg2)}
-.res-hint{font-size:.7rem;color:var(--muted);margin-top:.4rem;text-align:right}
-.afford-section{margin-top:2rem}
-.afford-title{font-family:var(--hd);font-size:.75rem;letter-spacing:.08em;
-  color:var(--bright);margin-bottom:.8rem}
-.afford-grid{display:flex;flex-direction:column;gap:.4rem}
-.afford-row{display:flex;justify-content:space-between;align-items:center;
-  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
-  padding:.4rem .7rem;font-size:.78rem}
-.afford-row .afford-name{font-family:var(--hd);font-size:.6rem;letter-spacing:.05em;color:var(--bright)}
-.afford-row .afford-cost{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
-.afford-row.can{border-color:rgba(0,230,118,0.3)}
-.afford-row.can .afford-name{color:var(--green)}
+    .res-pill {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .2rem .7rem;
+      font-family: var(--mono);
+      font-size: .78rem;
+      cursor: pointer;
+      transition: .2s
+    }
 
-/* REGIONS */
-.regions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
-.region-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1rem}
-.region-title{font-family:var(--hd);font-size:.7rem;letter-spacing:.08em;margin-bottom:.7rem}
-.region-systems{display:flex;flex-direction:column;gap:.25rem}
-.system-row{display:flex;align-items:center;gap:.5rem;font-size:.78rem;cursor:pointer;
-  padding:.25rem .35rem;border-radius:4px;transition:.15s}
-.system-row:hover{background:var(--bg3)}
-.system-check{width:14px;height:14px;border:1px solid var(--border2);border-radius:3px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
-.system-check.done{background:rgba(0,230,118,0.2);border-color:var(--green)}
-.system-check.done::after{content:'✓';font-size:.6rem;color:var(--green)}
-.system-tier{font-size:.65rem;color:var(--muted);margin-left:auto}
+    .res-pill:hover {
+      border-color: var(--cyan);
+      background: var(--card2)
+    }
 
-/* SECTION HEADINGS */
-.section-head{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem}
-.section-head h2{font-family:var(--hd);font-size:.85rem;letter-spacing:.1em;color:var(--bright)}
-.section-head .badge{font-family:var(--mono);font-size:.65rem;color:var(--muted);
-  background:var(--bg3);border:1px solid var(--border);border-radius:999px;
-  padding:.1rem .5rem}
-.section-head .line{flex:1;height:1px;background:var(--border)}
+    .res-pill .lbl {
+      color: var(--muted);
+      font-size: .7rem
+    }
 
-/* MISC */
-.tag{display:inline-block;font-size:.6rem;border-radius:3px;padding:.1rem .35rem;
-  font-family:var(--mono)}
-.tag.combat{background:rgba(255,68,102,0.15);color:var(--red)}
-.tag.production{background:rgba(168,85,247,0.15);color:var(--purple)}
-.tag.command{background:rgba(255,140,0,0.15);color:var(--orange)}
-.tag.movement{background:rgba(0,217,245,0.12);color:var(--cyan)}
-.tag.logistics{background:rgba(0,230,118,0.12);color:var(--green)}
-.tag.support{background:rgba(160,190,220,0.12);color:var(--muted)}
-.empty-state{text-align:center;padding:3rem;color:var(--muted);font-size:.85rem}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;
-  background:var(--bg2);border:1px solid var(--green);border-radius:6px;
-  color:var(--green);font-family:var(--mono);font-size:.78rem;
-  padding:.5rem 1rem;transition:1s;opacity:0;pointer-events:none}
-.toast.show{opacity:1}
-@media(max-width:800px){
-  .planner-grid{grid-template-columns:1fr}
-  .plan-card{grid-template-columns:1fr 1fr}
-  .summary-panel{position:static}
-}
-@media(max-width:500px){
-  header h1 .subtitle{display:none}
-  .buildings-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
-}
-</style>
+    .res-pill input {
+      background: none;
+      border: none;
+      color: var(--bright);
+      font-family: var(--mono);
+      font-size: .85rem;
+      width: 90px;
+      outline: none;
+      text-align: right
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      gap: .25rem;
+      padding: .5rem 1.2rem;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .nav-btn {
+      font-family: var(--hd);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--muted);
+      padding: .35rem .8rem;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .nav-btn:hover {
+      color: var(--cyan);
+      border-color: var(--border)
+    }
+
+    .nav-btn.active {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background: rgba(0, 217, 245, 0.08);
+      text-shadow: 0 0 10px rgba(0, 217, 245, 0.5)
+    }
+
+    /* MAIN */
+    main {
+      flex: 1;
+      padding: 1.2rem;
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%
+    }
+
+    .view {
+      display: none
+    }
+
+    .view.active {
+      display: block
+    }
+
+    /* BUILDING GRID */
+    .buildings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .8rem
+    }
+
+    .b-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .9rem;
+      cursor: pointer;
+      transition: .2s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .b-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: linear-gradient(135deg, rgba(0, 217, 245, 0.06), transparent);
+      transition: .3s
+    }
+
+    .b-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-1px)
+    }
+
+    .b-card:hover::before {
+      opacity: 1
+    }
+
+    .b-card.maxed {
+      border-color: rgba(0, 230, 118, 0.3)
+    }
+
+    .b-card.maxed .b-lvl {
+      color: var(--green)
+    }
+
+    .b-card-top {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: .6rem
+    }
+
+    .b-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0
+    }
+
+    .b-name {
+      font-family: var(--hd);
+      font-size: .62rem;
+      letter-spacing: .06em;
+      color: var(--bright);
+      line-height: 1.3
+    }
+
+    .b-lvl-row {
+      display: flex;
+      align-items: baseline;
+      gap: .4rem;
+      margin-bottom: .5rem
+    }
+
+    .b-lvl {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      color: var(--cyan);
+      line-height: 1
+    }
+
+    .b-lvl-label {
+      font-size: .65rem;
+      color: var(--muted)
+    }
+
+    .b-goal {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--gold)
+    }
+
+    .b-progress {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      margin-bottom: .5rem
+    }
+
+    .b-progress-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: .4s
+    }
+
+    .b-next-cost {
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--muted)
+    }
+
+    .b-next-cost .cost-val {
+      color: var(--orange)
+    }
+
+    .b-afford {
+      font-size: .6rem;
+      font-weight: 500;
+      margin-top: .3rem;
+      padding: .1rem .4rem;
+      border-radius: 3px;
+      display: inline-block
+    }
+
+    .b-afford.yes {
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--green)
+    }
+
+    .b-afford.no {
+      background: rgba(255, 68, 102, 0.12);
+      color: var(--red)
+    }
+
+    .b-afford.nodata {
+      background: rgba(160, 190, 220, 0.1);
+      color: var(--muted)
+    }
+
+    /* LEVEL CONTROLS */
+    .lvl-controls {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .5rem
+    }
+
+    .lvl-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--cyan);
+      font-size: 1rem;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .15s;
+      flex-shrink: 0
+    }
+
+    .lvl-btn:hover {
+      background: rgba(0, 217, 245, 0.15);
+      border-color: var(--cyan)
+    }
+
+    .lvl-display {
+      font-family: var(--mono);
+      font-size: .8rem;
+      color: var(--bright);
+      min-width: 28px;
+      text-align: center
+    }
+
+    /* DETAIL PANEL */
+    .detail-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px)
+    }
+
+    .detail-overlay.open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem
+    }
+
+    .detail-panel {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      box-shadow: 0 0 60px rgba(0, 100, 200, 0.2)
+    }
+
+    .detail-panel::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .detail-panel::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    .detail-panel::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px
+    }
+
+    .dp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.2rem
+    }
+
+    .dp-title {
+      font-family: var(--hd);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--cyan)
+    }
+
+    .dp-desc {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: .25rem
+    }
+
+    .dp-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: .2rem
+    }
+
+    .dp-close:hover {
+      color: var(--red)
+    }
+
+    .dp-levels {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem
+    }
+
+    .dp-lvl-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr 1fr 90px;
+      gap: .5rem;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: .75rem;
+      padding: .35rem .5rem;
+      border-radius: 5px;
+      border: 1px solid transparent
+    }
+
+    .dp-lvl-row.header {
+      color: var(--muted);
+      font-size: .65rem;
+      letter-spacing: .05em;
+      border-color: var(--border)
+    }
+
+    .dp-lvl-row.current {
+      background: rgba(0, 217, 245, 0.1);
+      border-color: rgba(0, 217, 245, 0.3)
+    }
+
+    .dp-lvl-row.future {
+      background: rgba(255, 140, 0, 0.06);
+      border-color: rgba(255, 140, 0, 0.2)
+    }
+
+    .dp-lvl-row.past {
+      opacity: .45
+    }
+
+    .dp-lvl-row.no-data {
+      opacity: .4;
+      font-style: italic
+    }
+
+    .dp-lvl-num {
+      color: var(--bright);
+      font-weight: 600
+    }
+
+    .dp-cost-m {
+      color: #ff8a65
+    }
+
+    .dp-cost-w {
+      color: #4fc3f7
+    }
+
+    .dp-cost-c {
+      color: var(--gold)
+    }
+
+    .dp-time {
+      color: var(--muted)
+    }
+
+    .dp-unlocks {
+      font-size: .65rem;
+      color: var(--green);
+      font-family: var(--body)
+    }
+
+    .dp-reqs {
+      font-size: .6rem;
+      color: var(--red);
+      font-family: var(--body);
+      margin-top: .1rem
+    }
+
+    .dp-set-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: .7rem;
+      padding: .2rem .5rem;
+      cursor: pointer;
+      transition: .15s;
+      white-space: nowrap
+    }
+
+    .dp-set-btn:hover {
+      background: rgba(0, 217, 245, 0.15)
+    }
+
+    /* PLANNER */
+    .planner-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.2rem
+    }
+
+    .planner-list {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem
+    }
+
+    .plan-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .8rem 1rem;
+      display: grid;
+      grid-template-columns: 130px 1fr auto;
+      gap: .8rem;
+      align-items: center
+    }
+
+    .plan-card.no-goal {
+      opacity: .55
+    }
+
+    .plan-name {
+      font-family: var(--hd);
+      font-size: .65rem;
+      letter-spacing: .05em;
+      color: var(--bright)
+    }
+
+    .plan-lvl-info {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-family: var(--mono);
+      font-size: .8rem
+    }
+
+    .plan-cur {
+      color: var(--cyan)
+    }
+
+    .plan-arrow {
+      color: var(--muted)
+    }
+
+    .plan-goal {
+      color: var(--gold)
+    }
+
+    .plan-costs {
+      display: flex;
+      gap: .8rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      margin-top: .3rem
+    }
+
+    .plan-goal-input {
+      width: 60px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: .8rem;
+      padding: .2rem .4rem;
+      text-align: center;
+      outline: none
+    }
+
+    .plan-goal-input:focus {
+      border-color: var(--gold)
+    }
+
+    .summary-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      position: sticky;
+      top: 80px;
+      height: fit-content
+    }
+
+    .summary-title {
+      font-family: var(--hd);
+      font-size: .75rem;
+      letter-spacing: .08em;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .summary-res {
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      margin-bottom: 1rem
+    }
+
+    .summary-res-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline
+    }
+
+    .summary-res-label {
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .summary-res-val {
+      font-family: var(--mono);
+      font-size: 1.1rem
+    }
+
+    .summary-res-val.metal {
+      color: #ff8a65
+    }
+
+    .summary-res-val.water {
+      color: #4fc3f7
+    }
+
+    .summary-res-val.coins {
+      color: var(--gold)
+    }
+
+    .summary-res-have {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted)
+    }
+
+    .summary-res-need {
+      font-size: .65rem;
+      margin-top: .1rem
+    }
+
+    .summary-res-need.ok {
+      color: var(--green)
+    }
+
+    .summary-res-need.short {
+      color: var(--red)
+    }
+
+    .summary-time {
+      background: var(--bg3);
+      border-radius: 6px;
+      padding: .7rem;
+      text-align: center;
+      margin-top: .8rem
+    }
+
+    .summary-time-label {
+      font-size: .65rem;
+      color: var(--muted)
+    }
+
+    .summary-time-val {
+      font-family: var(--mono);
+      font-size: 1rem;
+      color: var(--bright);
+      margin-top: .2rem
+    }
+
+    .clear-goals-btn {
+      width: 100%;
+      margin-top: 1rem;
+      background: rgba(255, 68, 102, 0.1);
+      border: 1px solid rgba(255, 68, 102, 0.3);
+      border-radius: 5px;
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: .72rem;
+      padding: .4rem;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .clear-goals-btn:hover {
+      background: rgba(255, 68, 102, 0.2)
+    }
+
+    /* RESOURCES */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem
+    }
+
+    .res-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem
+    }
+
+    .res-card-title {
+      font-family: var(--hd);
+      font-size: .7rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: .8rem
+    }
+
+    .res-input-big {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--bright);
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      padding: .5rem .8rem;
+      outline: none;
+      text-align: right;
+      transition: .2s
+    }
+
+    .res-input-big:focus {
+      border-color: var(--cyan);
+      background: var(--bg2)
+    }
+
+    .res-hint {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: .4rem;
+      text-align: right
+    }
+
+    .afford-section {
+      margin-top: 2rem
+    }
+
+    .afford-title {
+      font-family: var(--hd);
+      font-size: .75rem;
+      letter-spacing: .08em;
+      color: var(--bright);
+      margin-bottom: .8rem
+    }
+
+    .afford-grid {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem
+    }
+
+    .afford-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: .4rem .7rem;
+      font-size: .78rem
+    }
+
+    .afford-row .afford-name {
+      font-family: var(--hd);
+      font-size: .6rem;
+      letter-spacing: .05em;
+      color: var(--bright)
+    }
+
+    .afford-row .afford-cost {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted)
+    }
+
+    .afford-row.can {
+      border-color: rgba(0, 230, 118, 0.3)
+    }
+
+    .afford-row.can .afford-name {
+      color: var(--green)
+    }
+
+    /* REGIONS */
+    .regions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem
+    }
+
+    .region-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem
+    }
+
+    .region-title {
+      font-family: var(--hd);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      margin-bottom: .7rem
+    }
+
+    .region-systems {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem
+    }
+
+    .system-row {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      cursor: pointer;
+      padding: .25rem .35rem;
+      border-radius: 4px;
+      transition: .15s
+    }
+
+    .system-row:hover {
+      background: var(--bg3)
+    }
+
+    .system-check {
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: .2s
+    }
+
+    .system-check.done {
+      background: rgba(0, 230, 118, 0.2);
+      border-color: var(--green)
+    }
+
+    .system-check.done::after {
+      content: '✓';
+      font-size: .6rem;
+      color: var(--green)
+    }
+
+    .system-tier {
+      font-size: .65rem;
+      color: var(--muted);
+      margin-left: auto
+    }
+
+    /* SECTION HEADINGS */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      margin-bottom: 1rem
+    }
+
+    .section-head h2 {
+      font-family: var(--hd);
+      font-size: .85rem;
+      letter-spacing: .1em;
+      color: var(--bright)
+    }
+
+    .section-head .badge {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .1rem .5rem
+    }
+
+    .section-head .line {
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    /* MISC */
+    .tag {
+      display: inline-block;
+      font-size: .6rem;
+      border-radius: 3px;
+      padding: .1rem .35rem;
+      font-family: var(--mono)
+    }
+
+    .tag.combat {
+      background: rgba(255, 68, 102, 0.15);
+      color: var(--red)
+    }
+
+    .tag.production {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple)
+    }
+
+    .tag.command {
+      background: rgba(255, 140, 0, 0.15);
+      color: var(--orange)
+    }
+
+    .tag.movement {
+      background: rgba(0, 217, 245, 0.12);
+      color: var(--cyan)
+    }
+
+    .tag.logistics {
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--green)
+    }
+
+    .tag.support {
+      background: rgba(160, 190, 220, 0.12);
+      color: var(--muted)
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-size: .85rem
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 500;
+      background: var(--bg2);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .5rem 1rem;
+      transition: 1s;
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    @media(max-width:800px) {
+      .planner-grid {
+        grid-template-columns: 1fr
+      }
+
+      .plan-card {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .summary-panel {
+        position: static
+      }
+    }
+
+    @media(max-width:500px) {
+      header h1 .subtitle {
+        display: none
+      }
+
+      .buildings-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-<header>
-  <h1>FOUNDATION <span>GF</span> <span class="subtitle" style="color:var(--muted);font-weight:400;font-size:.7rem;letter-spacing:.06em">— COMMANDER'S LOG</span></h1>
-  <div class="res-bar">
-    <div class="res-pill" title="Metal on hand">
-      <span style="color:#ff8a65">⬡</span>
-      <span class="lbl">METAL</span>
-      <input type="number" id="r-metal" placeholder="0" min="0">
-    </div>
-    <div class="res-pill" title="Water on hand">
-      <span style="color:#4fc3f7">◈</span>
-      <span class="lbl">WATER</span>
-      <input type="number" id="r-water" placeholder="0" min="0">
-    </div>
-    <div class="res-pill" title="Coins on hand">
-      <span style="color:var(--gold)">◆</span>
-      <span class="lbl">COINS</span>
-      <input type="number" id="r-coins" placeholder="0" min="0">
-    </div>
-  </div>
-</header>
-
-<nav>
-  <button class="nav-btn active" onclick="showView('dashboard')">⬡ DASHBOARD</button>
-  <button class="nav-btn" onclick="showView('planner')">◎ PLANNER</button>
-  <button class="nav-btn" onclick="showView('resources')">⬛ RESOURCES</button>
-  <button class="nav-btn" onclick="showView('regions')">⊕ REGIONS</button>
-</nav>
-
-<main>
-  <!-- DASHBOARD -->
-  <div class="view active" id="view-dashboard">
-    <div class="section-head">
-      <h2>BUILDINGS</h2>
-      <span class="badge" id="buildings-badge">—</span>
-      <div class="line"></div>
-      <span style="font-size:.7rem;color:var(--muted)">Click any card to view level details</span>
-    </div>
-    <div class="buildings-grid" id="buildings-grid"></div>
-  </div>
-
-  <!-- PLANNER -->
-  <div class="view" id="view-planner">
-    <div class="section-head">
-      <h2>UPGRADE PLANNER</h2>
-      <div class="line"></div>
-      <span style="font-size:.7rem;color:var(--muted)">Set goal levels → see total resource cost</span>
-    </div>
-    <div class="planner-grid">
-      <div class="planner-list" id="planner-list"></div>
-      <div class="summary-panel" id="summary-panel">
-        <div class="summary-title">⬡ MISSION SUMMARY</div>
-        <div class="summary-res" id="summary-res"></div>
-        <div class="summary-time" id="summary-time"></div>
-        <button class="clear-goals-btn" onclick="clearGoals()">✕ Clear All Goals</button>
+  <header>
+    <h1>FOUNDATION <span>GF</span> <span class="subtitle" style="color:var(--muted);font-weight:400;font-size:.7rem;letter-spacing:.06em">— COMMANDER'S LOG</span></h1>
+    <div class="res-bar">
+      <div class="res-pill" title="Metal on hand">
+        <span style="color:#ff8a65">⬡</span>
+        <span class="lbl">METAL</span>
+        <input type="number" id="r-metal" placeholder="0" min="0">
+      </div>
+      <div class="res-pill" title="Water on hand">
+        <span style="color:#4fc3f7">◈</span>
+        <span class="lbl">WATER</span>
+        <input type="number" id="r-water" placeholder="0" min="0">
+      </div>
+      <div class="res-pill" title="Coins on hand">
+        <span style="color:var(--gold)">◆</span>
+        <span class="lbl">COINS</span>
+        <input type="number" id="r-coins" placeholder="0" min="0">
       </div>
     </div>
-  </div>
-
-  <!-- RESOURCES -->
-  <div class="view" id="view-resources">
-    <div class="section-head"><h2>RESOURCE INVENTORY</h2><div class="line"></div></div>
-    <div class="resources-grid">
-      <div class="res-card">
-        <div class="res-card-title">◈ METAL STOCKPILE</div>
-        <input class="res-input-big" type="number" id="big-metal" placeholder="0" min="0" style="border-color:rgba(255,138,101,0.4);color:#ff8a65"
-               oninput="syncRes('metal',this.value)">
-        <div class="res-hint">Enter your current metal stockpile</div>
+  </header>
+  <nav>
+    <button class="nav-btn active" onclick="showView('dashboard')">⬡ DASHBOARD</button>
+    <button class="nav-btn" onclick="showView('planner')">◎ PLANNER</button>
+    <button class="nav-btn" onclick="showView('resources')">⬛ RESOURCES</button>
+    <button class="nav-btn" onclick="showView('regions')">⊕ REGIONS</button>
+  </nav>
+  <main>
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="section-head">
+        <h2>BUILDINGS</h2>
+        <span class="badge" id="buildings-badge">—</span>
+        <div class="line"></div>
+        <span style="font-size:.7rem;color:var(--muted)">Click any card to view level details</span>
       </div>
-      <div class="res-card">
-        <div class="res-card-title">◈ WATER STOCKPILE</div>
-        <input class="res-input-big" type="number" id="big-water" placeholder="0" min="0" style="border-color:rgba(79,195,247,0.4);color:#4fc3f7"
-               oninput="syncRes('water',this.value)">
-        <div class="res-hint">Enter your current water stockpile</div>
+      <div class="buildings-grid" id="buildings-grid"></div>
+    </div>
+    <!-- PLANNER -->
+    <div class="view" id="view-planner">
+      <div class="section-head">
+        <h2>UPGRADE PLANNER</h2>
+        <div class="line"></div>
+        <span style="font-size:.7rem;color:var(--muted)">Set goal levels → see total resource cost</span>
       </div>
-      <div class="res-card">
-        <div class="res-card-title">◆ COINS</div>
-        <input class="res-input-big" type="number" id="big-coins" placeholder="0" min="0" style="border-color:rgba(255,208,51,0.4);color:var(--gold)"
-               oninput="syncRes('coins',this.value)">
-        <div class="res-hint">Enter your current coin balance</div>
+      <div class="planner-grid">
+        <div class="planner-list" id="planner-list"></div>
+        <div class="summary-panel" id="summary-panel">
+          <div class="summary-title">⬡ MISSION SUMMARY</div>
+          <div class="summary-res" id="summary-res"></div>
+          <div class="summary-time" id="summary-time"></div>
+          <button class="clear-goals-btn" onclick="clearGoals()">✕ Clear All Goals</button>
+        </div>
       </div>
     </div>
-    <div class="afford-section">
-      <div class="afford-title">UPGRADES YOU CAN AFFORD NOW</div>
-      <div class="afford-grid" id="afford-grid"></div>
+    <!-- RESOURCES -->
+    <div class="view" id="view-resources">
+      <div class="section-head">
+        <h2>RESOURCE INVENTORY</h2>
+        <div class="line"></div>
+      </div>
+      <div class="resources-grid">
+        <div class="res-card">
+          <div class="res-card-title">◈ METAL STOCKPILE</div>
+          <input class="res-input-big" type="number" id="big-metal" placeholder="0" min="0" style="border-color:rgba(255,138,101,0.4);color:#ff8a65" oninput="syncRes('metal',this.value)">
+          <div class="res-hint">Enter your current metal stockpile</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-title">◈ WATER STOCKPILE</div>
+          <input class="res-input-big" type="number" id="big-water" placeholder="0" min="0" style="border-color:rgba(79,195,247,0.4);color:#4fc3f7" oninput="syncRes('water',this.value)">
+          <div class="res-hint">Enter your current water stockpile</div>
+        </div>
+        <div class="res-card">
+          <div class="res-card-title">◆ COINS</div>
+          <input class="res-input-big" type="number" id="big-coins" placeholder="0" min="0" style="border-color:rgba(255,208,51,0.4);color:var(--gold)" oninput="syncRes('coins',this.value)">
+          <div class="res-hint">Enter your current coin balance</div>
+        </div>
+      </div>
+      <div class="afford-section">
+        <div class="afford-title">UPGRADES YOU CAN AFFORD NOW</div>
+        <div class="afford-grid" id="afford-grid"></div>
+      </div>
     </div>
-  </div>
-
-  <!-- REGIONS -->
-  <div class="view" id="view-regions">
-    <div class="section-head">
-      <h2>GALAXY REGIONS</h2>
-      <div class="line"></div>
-      <span style="font-size:.7rem;color:var(--muted)">Track conquered systems</span>
+    <!-- REGIONS -->
+    <div class="view" id="view-regions">
+      <div class="section-head">
+        <h2>GALAXY REGIONS</h2>
+        <div class="line"></div>
+        <span style="font-size:.7rem;color:var(--muted)">Track conquered systems</span>
+      </div>
+      <div class="regions-grid" id="regions-grid"></div>
     </div>
-    <div class="regions-grid" id="regions-grid"></div>
+  </main>
+  <!-- DETAIL OVERLAY -->
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+    <div class="detail-panel" id="detail-panel"></div>
   </div>
-</main>
+  <div class="toast" id="toast"></div>
+  <script>
+    // ============================================================
+    // GAME DATA
+    // ============================================================
+    // Level entries: [metal, water, coins, timeSec, unlocks, reqs_obj]
+    // null = data not yet in community spreadsheet
 
-<!-- DETAIL OVERLAY -->
-<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
-  <div class="detail-panel" id="detail-panel"></div>
-</div>
+    const BUILDINGS = {
+      core: {
+        name: 'Core', cat: 'command', icon: '◉', color: '#ff8c00',
+        desc: 'Central hub. Unlocks champion slots, ship slots, and fleet capacity.',
+        start: 1, max: 30,
+        lvls: {
+          1: [3000, 0, 0, 3, '5 champ cap, 1 ship slot', {}],
+          2: [8700, 0, 0, 5, '5 champ cap, 1 ship slot', {}],
+          3: [17200, 0, 0, 95, '5 champ, 1 ship, food processing', {}],
+          4: [22800, 22800, 0, 300, '5 champ cap, 1 ship slot', {}],
+          5: [37800, 37800, 0, 900, '5 champ, 1 ship, +1 fleet', { 'Main Cannon': 5 }],
+          6: [50000, 50000, 0, 3600, '5 champ cap, 1 ship slot', { 'Main Cannon': 6, 'Engine': 6 }],
+          7: [77100, 77100, 0, 10790, '5 champ cap, 1 ship slot', { 'Main Cannon': 7, 'Engine': 7 }],
+          8: [140400, 140400, 0, 19420, '5 champ cap, 1 ship slot', { 'Main Cannon': 8, 'Kinetic Shipyard': 7 }],
+          9: [232600, 232600, 0, 29130, '5 champ cap, 1 ship slot', { 'Main Cannon': 9, 'Beam Shipyard': 8 }],
+          10: [null, null, 0, null, '5 champ cap, 1 ship slot', { 'Main Cannon': 10, 'Ion Shipyard': 9 }],
+          11: [586800, 586800, 0, 50670, '5 champ cap, 1 ship slot', { 'Main Cannon': 11, 'Kinetic Shipyard': 10 }],
+          12: [null, null, 0, null, '5 champ cap, 1 ship slot', { 'Main Cannon': 12, 'Beam Shipyard': 12 }],
+          13: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+          14: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+          15: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+          16: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+          17: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+          18: [3740000, 3740000, 0, 369340, '5 champ cap, 1 ship slot', {}],
+          19: [4860000, 4860000, 0, 672000, '5 champ cap, 1 ship slot', {}],
+          20: [6340000, 6340000, 0, 656670, '5 champ cap, 1 ship slot', {}],
+          21: [8480000, 8480000, 0, 827730, '5 champ cap, 1 ship slot', {}],
+          22: [12090000, 12090000, 0, 1043350, '5 champ cap, 1 ship slot', {}],
+          23: [16490000, 16490000, 0, 1315140, '5 champ cap, 1 ship slot', { 'Main Cannon': 23, 'Kinetic Shipyard': 23 }],
+          24: [22310000, 22310000, 0, 1710340, '5 champ cap, 1 ship slot', { 'Main Cannon': 24, 'Beam Shipyard': 24 }],
+          25: [null, null, 0, null, '5 champ cap, 1 ship slot', { 'Main Cannon': 25, 'Ion Shipyard': 25 }],
+          26: [39260000, 39260000, 0, 2263890, '5 champ cap, 1 ship slot', { 'Main Cannon': 26, 'Kinetic Shipyard': 26 }],
+          27: [null, null, 0, null, '5 champ cap, 1 ship slot', { 'Main Cannon': 27, 'Beam Shipyard': 27 }],
+          28: [65990000, 65990000, 0, 2996590, '5 champ cap, 1 ship slot', { 'Main Cannon': 28, 'Ion Shipyard': 28 }],
+          29: [82110000, 82110000, 0, 3567440, '5 champ cap, 1 ship slot', { 'Main Cannon': 29, 'Kinetic Shipyard': 29 }],
+          30: [null, null, 0, null, '5 champ cap, 1 ship slot', {}],
+        }
+      },
+      engine: {
+        name: 'Engine', cat: 'movement', icon: '⚡', color: '#00d9f5',
+        desc: 'Increases flagship movement range by +5000 (early) / +500 (later) per level.',
+        start: 1, max: 30,
+        lvls: {
+          1: [2300, 0, 0, 3, 'Flagship +5000 range', {}],
+          2: [2700, 0, 0, 5, 'Flagship +5000 range', {}],
+          3: [3000, 0, 0, 10, 'Flagship +5000 range', {}],
+          4: [4000, 4000, 0, 40, 'Flagship +500 range', {}],
+          5: [5000, 5000, 0, 120, 'Flagship +500 range', {}],
+          6: [6700, 6700, 0, 480, 'Flagship +500 range', {}],
+          7: [null, null, 0, null, 'Flagship +500 range', {}],
+          8: [null, null, 0, null, 'Flagship +500 range', {}],
+          9: [null, null, 0, null, 'Flagship +500 range', {}],
+          10: [null, null, 0, null, 'Flagship +500 range', {}],
+          11: [null, null, 0, null, 'Flagship +500 range', {}],
+          12: [null, null, 0, null, 'Flagship +500 range', {}],
+          13: [null, null, 0, null, 'Flagship +500 range', {}],
+          14: [null, null, 0, null, 'Flagship +500 range', {}],
+          15: [null, null, 0, null, 'Flagship +500 range', {}],
+          16: [null, null, 0, null, 'Flagship +500 range', {}],
+          17: [379400, 379400, 0, 35940, 'Flagship +500 range', {}],
+          18: [498800, 498800, 0, 49250, 'Flagship +500 range', {}],
+          19: [648400, 648400, 0, 69470, 'Flagship +500 range', {}],
+          20: [845700, 845700, 0, 156000, 'Flagship +500 range', {}],
+          21: [1130000, 1130000, 0, 110370, 'Flagship +500 range', {}],
+          22: [1610000, 1610000, 0, 139120, 'Flagship +500 range', {}],
+          23: [2190000, 2190000, 0, 175360, 'Flagship +500 range', {}],
+          24: [2970000, 2970000, 0, 228050, 'Flagship +500 range', {}],
+          25: [3960000, 3960000, 0, 262370, 'Flagship +500 range', {}],
+          26: [5230000, 5230000, 0, 301860, 'Flagship +500 range', {}],
+          27: [null, null, 0, null, 'Flagship +500 range', {}],
+          28: [8790000, 8790000, 0, 399550, 'Flagship +500 range', {}],
+          29: [null, null, 0, null, 'Flagship +500 range', {}],
+          30: [null, null, 0, null, 'Flagship +500 range', {}],
+        }
+      },
+      main_cannon: {
+        name: 'Main Cannon', cat: 'combat', icon: '⊛', color: '#ff4466',
+        desc: 'Boosts flagship ATK and INT by +25 each per level.',
+        start: 1, max: 30,
+        lvls: {
+          1: [3300, 0, 0, 3, 'ATK +25, INT +25', {}],
+          2: [4000, 0, 0, 5, 'ATK +25, INT +25', {}],
+          3: [6200, 0, 0, 30, 'ATK +25, INT +25', {}],
+          4: [10500, 6200, 0, 100, 'ATK +25, INT +25', {}],
+          5: [13200, 9300, 0, 300, 'ATK +25, INT +25', {}],
+          6: [25000, 16700, 0, 1200, 'ATK +25, INT +25', {}],
+          7: [38600, 25700, 0, 3600, 'ATK +25, INT +25', {}],
+          8: [70200, 46800, 0, 6480, 'ATK +25, INT +25', {}],
+          9: [116300, 77600, 0, 9710, 'ATK +25, INT +25', {}],
+          10: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          11: [null, null, 0, null, 'ATK +25, INT +25', { 'Guild Liaison': 11 }],
+          12: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          13: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          14: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          15: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          16: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          17: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          18: [1870000, 1240000, 0, 123120, 'ATK +25, INT +25', {}],
+          19: [2430000, 1620000, 0, 224400, 'ATK +25, INT +25', {}],
+          20: [3170000, 2110000, 0, 218890, 'ATK +25, INT +25', {}],
+          21: [4240000, 2820000, 0, 275910, 'ATK +25, INT +25', {}],
+          22: [6040000, 4030000, 0, 477000, 'ATK +25, INT +25', { 'Repair Cabin': 22 }],
+          23: [8240000, 5490000, 0, 438390, 'ATK +25, INT +25', { 'Guild Liaison': 23 }],
+          24: [11150000, 7430000, 0, 570120, 'ATK +25, INT +25', { 'Research': 24 }],
+          25: [14850000, 9900000, 0, 655920, 'ATK +25, INT +25', { 'Repair Cabin': 25 }],
+          26: [null, null, 0, null, 'ATK +25, INT +25', { 'Guild Liaison': 26 }],
+          27: [25820000, 17210000, 0, 868200, 'ATK +25, INT +25', { 'Research': 27 }],
+          28: [32990000, 21990000, 0, 998870, 'ATK +25, INT +25', {}],
+          29: [null, null, 0, null, 'ATK +25, INT +25', {}],
+          30: [null, null, 0, null, 'ATK +25, INT +25', {}],
+        }
+      },
+      ion_shipyard: {
+        name: 'Ion Shipyard', cat: 'production', icon: '◎', color: '#a855f7',
+        desc: '+0.5% ship build speed per level. Starts at level 0.',
+        start: 0, max: 30,
+        lvls: {
+          0: [400, 0, 0, 2, 'Build speed +0.5%', {}],
+          1: [700, 0, 0, 3, 'Build speed +0.5%', {}],
+          2: [1300, 0, 0, 5, 'Build speed +0.5%', {}],
+          3: [2500, 0, 0, 20, 'Build speed +0.5%', {}],
+          4: [4900, 3300, 0, 60, 'Build speed +0.5%', {}],
+          5: [7400, 4900, 0, 170, 'Build speed +0.5%', {}],
+          6: [13200, 8800, 0, 650, 'Build speed +0.5%', {}],
+          7: [20400, 13600, 0, 1950, 'Build speed +0.5%', {}],
+          8: [37100, 24700, 0, 3500, 'Build speed +0.5%', {}],
+          9: [61400, 41000, 0, 5250, 'Build speed +0.5%', {}],
+          10: [118900, 79300, 0, 7240, 'Build speed +0.5%', {}],
+          11: [null, null, 0, null, 'Build speed +0.5%', {}],
+          12: [null, null, 0, null, 'Build speed +0.5%', {}],
+          13: [null, null, 0, null, 'Build speed +0.5%', {}],
+          14: [null, null, 0, null, 'Build speed +0.5%', {}],
+          15: [null, null, 0, null, 'Build speed +0.5%', {}],
+          16: [null, null, 0, null, 'Build speed +0.5%', {}],
+          17: [751100, 500700, 0, 48510, 'Build speed +0.5%', {}],
+          18: [987600, 658400, 0, 66490, 'Build speed +0.5%', {}],
+          19: [1280000, 855800, 0, 93780, 'Build speed +0.5%', {}],
+          20: [1670000, 1110000, 0, 118200, 'Build speed +0.5%', {}],
+          21: [2240000, 1490000, 0, 148990, 'Build speed +0.5%', {}],
+          22: [3190000, 2120000, 0, 187810, 'Build speed +0.5%', {}],
+          23: [4350000, 2900000, 0, 236730, 'Build speed +0.5%', {}],
+          24: [5890000, 3920000, 0, 307860, 'Build speed +0.5%', {}],
+          25: [null, null, 0, null, 'Build speed +0.5%', {}],
+          26: [10360000, 6910000, 0, 407500, 'Build speed +0.5%', {}],
+          27: [13630000, 9090000, 0, 468830, 'Build speed +0.5%', {}],
+          28: [17420000, 11610000, 0, 539390, 'Build speed +0.5%', {}],
+          29: [null, null, 0, null, 'Build speed +0.5%', {}],
+          30: [null, null, 0, null, 'Build speed +0.5%', {}],
+        }
+      },
+      kinetic_shipyard: {
+        name: 'Kinetic Shipyard', cat: 'production', icon: '◉', color: '#a855f7',
+        desc: '+0.5% ship build speed per level. Starts at level 0.',
+        start: 0, max: 30,
+        lvls: {  // Same cost structure as Ion Shipyard
+          0: [400, 0, 0, 2, 'Build speed +0.5%', {}], 1: [700, 0, 0, 3, 'Build speed +0.5%', {}],
+          2: [1300, 0, 0, 5, 'Build speed +0.5%', {}], 3: [2500, 0, 0, 20, 'Build speed +0.5%', {}],
+          4: [4900, 3300, 0, 60, 'Build speed +0.5%', {}], 5: [7400, 4900, 0, 170, 'Build speed +0.5%', {}],
+          6: [13200, 8800, 0, 650, 'Build speed +0.5%', {}], 7: [20400, 13600, 0, 1950, 'Build speed +0.5%', {}],
+          8: [37100, 24700, 0, 3500, 'Build speed +0.5%', {}], 9: [61400, 41000, 0, 5250, 'Build speed +0.5%', {}],
+          10: [118900, 79300, 0, 7240, 'Build speed +0.5%', {}],
+          11: [null, null, 0, null, 'Build speed +0.5%', {}], 12: [null, null, 0, null, 'Build speed +0.5%', {}],
+          13: [null, null, 0, null, 'Build speed +0.5%', {}], 14: [null, null, 0, null, 'Build speed +0.5%', {}],
+          15: [null, null, 0, null, 'Build speed +0.5%', {}], 16: [null, null, 0, null, 'Build speed +0.5%', {}],
+          17: [751100, 500700, 0, 48510, 'Build speed +0.5%', {}], 18: [987600, 658400, 0, 66490, 'Build speed +0.5%', {}],
+          19: [1280000, 855800, 0, 93780, 'Build speed +0.5%', {}], 20: [1670000, 1110000, 0, 118200, 'Build speed +0.5%', {}],
+          21: [2240000, 1490000, 0, 148990, 'Build speed +0.5%', {}], 22: [3190000, 2120000, 0, 187810, 'Build speed +0.5%', {}],
+          23: [4350000, 2900000, 0, 236730, 'Build speed +0.5%', {}], 24: [5890000, 3920000, 0, 307860, 'Build speed +0.5%', {}],
+          25: [null, null, 0, null, 'Build speed +0.5%', {}],
+          26: [10360000, 6910000, 0, 407500, 'Build speed +0.5%', {}], 27: [13630000, 9090000, 0, 468830, 'Build speed +0.5%', {}],
+          28: [17420000, 11610000, 0, 539390, 'Build speed +0.5%', {}], 29: [null, null, 0, null, 'Build speed +0.5%', {}],
+          30: [null, null, 0, null, 'Build speed +0.5%', {}],
+        }
+      },
+      beam_shipyard: {
+        name: 'Beam Shipyard', cat: 'production', icon: '⊕', color: '#a855f7',
+        desc: '+0.5% ship build speed per level. Starts at level 0.',
+        start: 0, max: 30,
+        lvls: {  // Same cost structure as Ion Shipyard
+          0: [400, 0, 0, 2, 'Build speed +0.5%', {}], 1: [700, 0, 0, 3, 'Build speed +0.5%', {}],
+          2: [1300, 0, 0, 5, 'Build speed +0.5%', {}], 3: [2500, 0, 0, 20, 'Build speed +0.5%', {}],
+          4: [4900, 3300, 0, 60, 'Build speed +0.5%', {}], 5: [7400, 4900, 0, 170, 'Build speed +0.5%', {}],
+          6: [13200, 8800, 0, 650, 'Build speed +0.5%', {}], 7: [20400, 13600, 0, 1950, 'Build speed +0.5%', {}],
+          8: [37100, 24700, 0, 3500, 'Build speed +0.5%', {}], 9: [61400, 41000, 0, 5250, 'Build speed +0.5%', {}],
+          10: [118900, 79300, 0, 7240, 'Build speed +0.5%', {}],
+          11: [null, null, 0, null, 'Build speed +0.5%', {}], 12: [null, null, 0, null, 'Build speed +0.5%', {}],
+          13: [null, null, 0, null, 'Build speed +0.5%', {}], 14: [null, null, 0, null, 'Build speed +0.5%', {}],
+          15: [null, null, 0, null, 'Build speed +0.5%', {}], 16: [null, null, 0, null, 'Build speed +0.5%', {}],
+          17: [751100, 500700, 0, 48510, 'Build speed +0.5%', {}], 18: [987600, 658400, 0, 66490, 'Build speed +0.5%', {}],
+          19: [1280000, 855800, 0, 93780, 'Build speed +0.5%', {}], 20: [1670000, 1110000, 0, 118200, 'Build speed +0.5%', {}],
+          21: [2240000, 1490000, 0, 148990, 'Build speed +0.5%', {}], 22: [3190000, 2120000, 0, 187810, 'Build speed +0.5%', {}],
+          23: [4350000, 2900000, 0, 236730, 'Build speed +0.5%', {}], 24: [5890000, 3920000, 0, 307860, 'Build speed +0.5%', {}],
+          25: [null, null, 0, null, 'Build speed +0.5%', {}],
+          26: [10360000, 6910000, 0, 407500, 'Build speed +0.5%', {}], 27: [13630000, 9090000, 0, 468830, 'Build speed +0.5%', {}],
+          28: [17420000, 11610000, 0, 539390, 'Build speed +0.5%', {}], 29: [null, null, 0, null, 'Build speed +0.5%', {}],
+          30: [null, null, 0, null, 'Build speed +0.5%', {}],
+        }
+      },
+      cargo_hold: {
+        name: 'Cargo Hold', cat: 'logistics', icon: '▣', color: '#00b894',
+        desc: 'Increases fleet cargo load capacity by +10 per level.',
+        start: 1, max: 30,
+        lvls: {
+          1: [null, null, 0, null, 'Fleet load +10', {}], 2: [null, null, 0, null, 'Fleet load +10', {}],
+          3: [null, null, 0, null, 'Fleet load +10', {}], 4: [null, null, 0, null, 'Fleet load +10', {}],
+          5: [null, null, 0, null, 'Fleet load +10', {}], 6: [null, null, 0, null, 'Fleet load +10', {}],
+          7: [null, null, 0, null, 'Fleet load +10', {}], 8: [null, null, 0, null, 'Fleet load +10', {}],
+          9: [null, null, 0, null, 'Fleet load +10', {}], 10: [null, null, 0, null, 'Fleet load +10', {}],
+          11: [null, null, 0, null, 'Fleet load +10', {}], 12: [null, null, 0, null, 'Fleet load +10', {}],
+          13: [null, null, 0, null, 'Fleet load +10', {}], 14: [null, null, 0, null, 'Fleet load +10', {}],
+          15: [null, null, 0, null, 'Fleet load +10', {}], 16: [null, null, 0, null, 'Fleet load +10', {}],
+          17: [64100, 149400, 0, 16850, 'Fleet load +10', {}],
+          18: [84200, 196400, 0, 23090, 'Fleet load +10', {}],
+          19: [109500, 255300, 0, 32560, 'Fleet load +10, protected 195,360', {}],
+          20: [142800, 333000, 0, 41050, 'Fleet load +10', {}],
+          21: [191000, 445600, 0, 51740, 'Fleet load +10', {}],
+          22: [null, null, 0, null, 'Fleet load +10', {}], 23: [null, null, 0, null, 'Fleet load +10', {}],
+          24: [null, null, 0, null, 'Fleet load +10', {}], 25: [null, null, 0, null, 'Fleet load +10', {}],
+          26: [null, null, 0, null, 'Fleet load +10', {}], 27: [null, null, 0, null, 'Fleet load +10', {}],
+          28: [null, null, 0, null, 'Fleet load +10', {}], 29: [null, null, 0, null, 'Fleet load +10', {}],
+          30: [null, null, 0, null, 'Fleet load +10', {}],
+        }
+      },
+      recruitment_hall: {
+        name: 'Recruitment Hall', cat: 'support', icon: '◈', color: '#74b9ff',
+        desc: 'Reduces recruit cooldown and increases recruit yield/storage.',
+        start: 0, max: 30,
+        lvls: {
+          0: [0, 100, 0, 2, 'Recruit cooldown –12', {}],
+          1: [null, null, 0, null, 'Recruit speed boost', {}], 2: [null, null, 0, null, 'Recruit speed boost', {}],
+          3: [null, null, 0, null, 'Recruit speed boost', {}], 4: [null, null, 0, null, 'Recruit speed boost', {}],
+          5: [null, null, 0, null, 'Recruit speed boost', {}], 6: [null, null, 0, null, 'Recruit speed boost', {}],
+          7: [null, null, 0, null, 'Recruit speed boost', {}], 8: [null, null, 0, null, 'Recruit speed boost', {}],
+          9: [null, null, 0, null, 'Recruit speed boost', {}], 10: [null, null, 0, null, 'Recruit speed boost', {}],
+          11: [null, null, 0, null, 'Recruit speed boost', {}], 12: [null, null, 0, null, 'Recruit speed boost', {}],
+          13: [null, null, 0, null, 'Recruit speed boost', {}], 14: [null, null, 0, null, 'Recruit speed boost', {}],
+          15: [null, null, 0, null, 'Recruit speed boost', {}], 16: [null, null, 0, null, 'Recruit speed boost', {}],
+          17: [142300, 0, 0, 11230, 'Yield 1260, cap 15,120', {}],
+          18: [null, null, 0, null, 'Recruit speed boost', {}],
+          19: [null, null, 0, null, 'Recruit speed boost', {}],
+          20: [317200, 0, 0, 27370, 'Yield 1620, cap 19,440', {}],
+          21: [null, null, 0, null, 'Recruit speed boost', {}],
+          22: [null, null, 0, null, 'Recruit speed boost', {}], 23: [null, null, 0, null, 'Recruit speed boost', {}],
+          24: [null, null, 0, null, 'Recruit speed boost', {}], 25: [null, null, 0, null, 'Recruit speed boost', {}],
+          26: [null, null, 0, null, 'Recruit speed boost', {}], 27: [null, null, 0, null, 'Recruit speed boost', {}],
+          28: [null, null, 0, null, 'Recruit speed boost', {}], 29: [null, null, 0, null, 'Recruit speed boost', {}],
+          30: [null, null, 0, null, 'Recruit speed boost', {}],
+        }
+      },
+      repair_cabin: {
+        name: 'Repair Cabin', cat: 'support', icon: '⊞', color: '#fdcb6e',
+        desc: 'Improves fleet repair speed and capacity.',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Repair boost', {}]]))
+      },
+      research: {
+        name: 'Research', cat: 'support', icon: '⊛', color: '#6c5ce7',
+        desc: '+0.2% research speed per level.',
+        start: 0, max: 30,
+        lvls: {
+          0: [null, null, 0, null, 'Research speed +0.2%', {}],
+          1: [null, null, 0, null, 'Research speed +0.2%', {}], 2: [null, null, 0, null, 'Research speed +0.2%', {}],
+          3: [null, null, 0, null, 'Research speed +0.2%', {}], 4: [null, null, 0, null, 'Research speed +0.2%', {}],
+          5: [null, null, 0, null, 'Research speed +0.2%', {}], 6: [null, null, 0, null, 'Research speed +0.2%', {}],
+          7: [null, null, 0, null, 'Research speed +0.2%', {}], 8: [null, null, 0, null, 'Research speed +0.2%', {}],
+          9: [null, null, 0, null, 'Research speed +0.2%', {}], 10: [null, null, 0, null, 'Research speed +0.2%', {}],
+          11: [null, null, 0, null, 'Research speed +0.2%', {}], 12: [null, null, 0, null, 'Research speed +0.2%', {}],
+          13: [null, null, 0, null, 'Research speed +0.2%', {}], 14: [null, null, 0, null, 'Research speed +0.2%', {}],
+          15: [null, null, 0, null, 'Research speed +0.2%', {}], 16: [null, null, 0, null, 'Research speed +0.2%', {}],
+          17: [320100, 746800, 0, 84220, 'Research speed +0.2%', {}],
+          18: [420900, 982000, 0, 115420, 'Research speed +0.2%', {}],
+          19: [null, null, 0, null, 'Research speed +0.2%', {}],
+          20: [713600, 1660000, 0, 205210, 'Research speed +0.2%', {}],
+          21: [null, null, 0, null, 'Research speed +0.2%', {}],
+          22: [null, null, 0, null, 'Research speed +0.2%', {}], 23: [null, null, 0, null, 'Research speed +0.2%', {}],
+          24: [null, null, 0, null, 'Research speed +0.2%', {}], 25: [null, null, 0, null, 'Research speed +0.2%', {}],
+          26: [null, null, 0, null, 'Research speed +0.2%', {}], 27: [null, null, 0, null, 'Research speed +0.2%', {}],
+          28: [null, null, 0, null, 'Research speed +0.2%', {}], 29: [null, null, 0, null, 'Research speed +0.2%', {}],
+          30: [null, null, 0, null, 'Research speed +0.2%', {}],
+        }
+      },
+      water: {
+        name: 'Water', cat: 'support', icon: '◈', color: '#4fc3f7',
+        desc: 'Increases water production and storage.',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Water production boost', {}]]))
+      },
+      smelting: {
+        name: 'Smelting', cat: 'support', icon: '⬡', color: '#e17055',
+        desc: 'Increases metal smelting yield and storage capacity.',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Smelting yield boost', {}]]))
+      },
+      food: {
+        name: 'Food', cat: 'support', icon: '◆', color: '#55efc4',
+        desc: 'Increases food production for crew.',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Food production boost', {}]]))
+      },
+      crew_cabin_1: {
+        name: 'Crew Cabin 1', cat: 'support', icon: '⊡', color: '#b2bec3',
+        desc: 'Increases crew capacity (cabin 1).',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Crew capacity boost', {}]]))
+      },
+      crew_cabin_2: {
+        name: 'Crew Cabin 2', cat: 'support', icon: '⊠', color: '#b2bec3',
+        desc: 'Increases crew capacity (cabin 2).',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Crew capacity boost', {}]]))
+      },
+      self_defense_1: {
+        name: 'Self Defense 1', cat: 'combat', icon: '⊗', color: '#ff7675',
+        desc: 'Boosts base defense stats (turret 1).',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Defense boost', {}]]))
+      },
+      self_defense_2: {
+        name: 'Self Defense 2', cat: 'combat', icon: '⊘', color: '#ff7675',
+        desc: 'Boosts base defense stats (turret 2).',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Defense boost', {}]]))
+      },
+      guild_liaison: {
+        name: 'Guild Liaison', cat: 'support', icon: '⊞', color: '#fd79a8',
+        desc: 'Enables guild office, unlocks higher-tier Main Cannon upgrades.',
+        start: 1, max: 30,
+        lvls: Object.fromEntries(Array.from({ length: 30 }, (_, i) => [i + 1, [null, null, 0, null, 'Guild office access', {}]]))
+      },
+    };
 
-<div class="toast" id="toast"></div>
+    const REGIONS = {
+      'Border Region 1': { color: '#74b9ff', systems: ['Kahlid(1)', 'Panalis(1)', 'Koshil(1)', 'Canopus(2)', 'Taylor(2)', 'Askat(2)', 'Gail(3)', 'Nirman(3)', 'Arianne(4)'] },
+      'Border Region 2': { color: '#81ecec', systems: ['Sanekis(1)', 'Marus(1)', 'Hälle(1)', 'Finn(2)', 'Ghonas(2)', 'Sare(3)', 'Korvas(2)', 'Sain(3)', 'Hoare(4)'] },
+      'Border Region 3': { color: '#a29bfe', systems: ['Vos(1)', 'Nandes(1)', 'Sku(1)', 'Liji(2)', 'Ayn(2)', 'Berg(2)', 'Ronna(3)', 'Salva(3)', 'Hadil(4)'] },
+      'Border Region 4': { color: '#55efc4', systems: ['Kylen(1)', 'Tren(1)', 'Pike(1)', 'Yurwick(2)', 'Fern(2)', 'Palma(2)', 'Sass(3)', 'Wayshun(3)', 'Izar(4)'] },
+      'Core Region 1': { color: '#fdcb6e', systems: ['Oden(5)', 'Taner(5)', 'Xexis(5)', 'Wolf(5)', 'Brink(6)', 'Dres(6)', 'Elvan(7)'] },
+      'Core Region 2': { color: '#e17055', systems: ['Garris(5)', 'Hannekis(5)', 'Kiril(5)', 'Aer(5)', 'Tronne(6)', 'Manekis(6)', 'Narvon(7)'] },
+      'Central Region': { color: '#d63031', systems: ['Acrifon(8)', 'Dax(8)', 'Yeregania(8)', 'Xarnas(9)'] },
+      'PvP / Red Zones': { color: '#ff7675', systems: ['Kruger(4)', 'Cerno(4)', 'Sphinx(4)', 'Kanvo(4)'] },
+      'Abyss Region': { color: '#6c5ce7', systems: ['Farnick(8)', 'Acrifon(8)', 'Dax(8)', 'Yeregania(8)', 'Xarnas(9)'] },
+    };
 
-<script>
-// ============================================================
-// GAME DATA
-// ============================================================
-// Level entries: [metal, water, coins, timeSec, unlocks, reqs_obj]
-// null = data not yet in community spreadsheet
+    // ============================================================
+    // STATE
+    // ============================================================
+    const SAVE_KEY = 'fgf_tracker_v2';
+    let state = {
+      levels: {},    // {buildingKey: currentLevel}
+      goals: {},     // {buildingKey: goalLevel}
+      resources: { metal: 0, water: 0, coins: 0 },
+      systems: {},   // {systemName: true}
+    };
 
-const BUILDINGS = {
-  core:{name:'Core',cat:'command',icon:'◉',color:'#ff8c00',
-    desc:'Central hub. Unlocks champion slots, ship slots, and fleet capacity.',
-    start:1,max:21,
-    lvls:{
-      1: [3000,0,0,3,'5 champ cap, 1 ship slot',{}],
-      2: [8700,0,0,5,'5 champ cap, 1 ship slot',{}],
-      3: [17200,0,0,95,'5 champ, 1 ship, food processing',{}],
-      4: [22800,22800,0,300,'5 champ cap, 1 ship slot',{}],
-      5: [37800,37800,0,900,'5 champ, 1 ship, +1 fleet',{'Main Cannon':5}],
-      6: [50000,50000,0,3600,'5 champ cap, 1 ship slot',{'Main Cannon':6,'Engine':6}],
-      7: [77100,77100,0,10790,'5 champ cap, 1 ship slot',{'Main Cannon':7,'Engine':7}],
-      8: [140400,140400,0,19420,'5 champ cap, 1 ship slot',{'Main Cannon':8,'Kinetic Shipyard':7}],
-      9: [232600,232600,0,29130,'5 champ cap, 1 ship slot',{'Main Cannon':9,'Beam Shipyard':8}],
-      10:[null,null,0,null,'5 champ cap, 1 ship slot',{'Main Cannon':10,'Ion Shipyard':9}],
-      11:[586800,586800,0,50670,'5 champ cap, 1 ship slot',{'Main Cannon':11,'Kinetic Shipyard':10}],
-      12:[null,null,0,null,'5 champ cap, 1 ship slot',{'Main Cannon':12,'Beam Shipyard':12}],
-      13:[null,null,0,null,'5 champ cap, 1 ship slot',{}],
-      14:[null,null,0,null,'5 champ cap, 1 ship slot',{}],
-      15:[null,null,0,null,'5 champ cap, 1 ship slot',{}],
-      16:[null,null,0,null,'5 champ cap, 1 ship slot',{}],
-      17:[null,null,0,null,'5 champ cap, 1 ship slot',{}],
-      18:[3740000,3740000,0,369340,'5 champ cap, 1 ship slot',{}],
-      19:[4860000,4860000,0,672000,'5 champ cap, 1 ship slot',{}],
-      20:[6340000,6340000,0,656670,'5 champ cap, 1 ship slot',{}],
-      21:[8480000,8480000,0,827730,'5 champ cap, 1 ship slot',{}],
-    }},
-  engine:{name:'Engine',cat:'movement',icon:'⚡',color:'#00d9f5',
-    desc:'Increases flagship movement range by +5000 (early) / +500 (later) per level.',
-    start:1,max:21,
-    lvls:{
-      1: [2300,0,0,3,'Flagship +5000 range',{}],
-      2: [2700,0,0,5,'Flagship +5000 range',{}],
-      3: [3000,0,0,10,'Flagship +5000 range',{}],
-      4: [4000,4000,0,40,'Flagship +500 range',{}],
-      5: [5000,5000,0,120,'Flagship +500 range',{}],
-      6: [6700,6700,0,480,'Flagship +500 range',{}],
-      7: [null,null,0,null,'Flagship +500 range',{}],
-      8: [null,null,0,null,'Flagship +500 range',{}],
-      9: [null,null,0,null,'Flagship +500 range',{}],
-      10:[null,null,0,null,'Flagship +500 range',{}],
-      11:[null,null,0,null,'Flagship +500 range',{}],
-      12:[null,null,0,null,'Flagship +500 range',{}],
-      13:[null,null,0,null,'Flagship +500 range',{}],
-      14:[null,null,0,null,'Flagship +500 range',{}],
-      15:[null,null,0,null,'Flagship +500 range',{}],
-      16:[null,null,0,null,'Flagship +500 range',{}],
-      17:[379400,379400,0,35940,'Flagship +500 range',{}],
-      18:[498800,498800,0,49250,'Flagship +500 range',{}],
-      19:[648400,648400,0,69470,'Flagship +500 range',{}],
-      20:[845700,845700,0,156000,'Flagship +500 range',{}],
-      21:[1130000,1130000,0,110370,'Flagship +500 range',{}],
-    }},
-  main_cannon:{name:'Main Cannon',cat:'combat',icon:'⊛',color:'#ff4466',
-    desc:'Boosts flagship ATK and INT by +25 each per level.',
-    start:1,max:21,
-    lvls:{
-      1: [3300,0,0,3,'ATK +25, INT +25',{}],
-      2: [4000,0,0,5,'ATK +25, INT +25',{}],
-      3: [6200,0,0,30,'ATK +25, INT +25',{}],
-      4: [10500,6200,0,100,'ATK +25, INT +25',{}],
-      5: [13200,9300,0,300,'ATK +25, INT +25',{}],
-      6: [25000,16700,0,1200,'ATK +25, INT +25',{}],
-      7: [38600,25700,0,3600,'ATK +25, INT +25',{}],
-      8: [70200,46800,0,6480,'ATK +25, INT +25',{}],
-      9: [116300,77600,0,9710,'ATK +25, INT +25',{}],
-      10:[null,null,0,null,'ATK +25, INT +25',{}],
-      11:[null,null,0,null,'ATK +25, INT +25',{'Guild Liaison':11}],
-      12:[null,null,0,null,'ATK +25, INT +25',{}],
-      13:[null,null,0,null,'ATK +25, INT +25',{}],
-      14:[null,null,0,null,'ATK +25, INT +25',{}],
-      15:[null,null,0,null,'ATK +25, INT +25',{}],
-      16:[null,null,0,null,'ATK +25, INT +25',{}],
-      17:[null,null,0,null,'ATK +25, INT +25',{}],
-      18:[1870000,1240000,0,123120,'ATK +25, INT +25',{}],
-      19:[2430000,1620000,0,224400,'ATK +25, INT +25',{}],
-      20:[3170000,2110000,0,218890,'ATK +25, INT +25',{}],
-      21:[4240000,2820000,0,275910,'ATK +25, INT +25',{}],
-    }},
-  ion_shipyard:{name:'Ion Shipyard',cat:'production',icon:'◎',color:'#a855f7',
-    desc:'+0.5% ship build speed per level. Starts at level 0.',
-    start:0,max:20,
-    lvls:{
-      0: [400,0,0,2,'Build speed +0.5%',{}],
-      1: [700,0,0,3,'Build speed +0.5%',{}],
-      2: [1300,0,0,5,'Build speed +0.5%',{}],
-      3: [2500,0,0,20,'Build speed +0.5%',{}],
-      4: [4900,3300,0,60,'Build speed +0.5%',{}],
-      5: [7400,4900,0,170,'Build speed +0.5%',{}],
-      6: [13200,8800,0,650,'Build speed +0.5%',{}],
-      7: [20400,13600,0,1950,'Build speed +0.5%',{}],
-      8: [37100,24700,0,3500,'Build speed +0.5%',{}],
-      9: [61400,41000,0,5250,'Build speed +0.5%',{}],
-      10:[118900,79300,0,7240,'Build speed +0.5%',{}],
-      11:[null,null,0,null,'Build speed +0.5%',{}],
-      12:[null,null,0,null,'Build speed +0.5%',{}],
-      13:[null,null,0,null,'Build speed +0.5%',{}],
-      14:[null,null,0,null,'Build speed +0.5%',{}],
-      15:[null,null,0,null,'Build speed +0.5%',{}],
-      16:[null,null,0,null,'Build speed +0.5%',{}],
-      17:[751100,500700,0,48510,'Build speed +0.5%',{}],
-      18:[987600,658400,0,66490,'Build speed +0.5%',{}],
-      19:[1280000,855800,0,93780,'Build speed +0.5%',{}],
-      20:[1670000,1110000,0,118200,'Build speed +0.5%',{}],
-    }},
-  kinetic_shipyard:{name:'Kinetic Shipyard',cat:'production',icon:'◉',color:'#a855f7',
-    desc:'+0.5% ship build speed per level. Starts at level 0.',
-    start:0,max:20,
-    lvls:{  // Same cost structure as Ion Shipyard
-      0:[400,0,0,2,'Build speed +0.5%',{}],1:[700,0,0,3,'Build speed +0.5%',{}],
-      2:[1300,0,0,5,'Build speed +0.5%',{}],3:[2500,0,0,20,'Build speed +0.5%',{}],
-      4:[4900,3300,0,60,'Build speed +0.5%',{}],5:[7400,4900,0,170,'Build speed +0.5%',{}],
-      6:[13200,8800,0,650,'Build speed +0.5%',{}],7:[20400,13600,0,1950,'Build speed +0.5%',{}],
-      8:[37100,24700,0,3500,'Build speed +0.5%',{}],9:[61400,41000,0,5250,'Build speed +0.5%',{}],
-      10:[118900,79300,0,7240,'Build speed +0.5%',{}],
-      11:[null,null,0,null,'Build speed +0.5%',{}],12:[null,null,0,null,'Build speed +0.5%',{}],
-      13:[null,null,0,null,'Build speed +0.5%',{}],14:[null,null,0,null,'Build speed +0.5%',{}],
-      15:[null,null,0,null,'Build speed +0.5%',{}],16:[null,null,0,null,'Build speed +0.5%',{}],
-      17:[751100,500700,0,48510,'Build speed +0.5%',{}],18:[987600,658400,0,66490,'Build speed +0.5%',{}],
-      19:[1280000,855800,0,93780,'Build speed +0.5%',{}],20:[1670000,1110000,0,118200,'Build speed +0.5%',{}],
-    }},
-  beam_shipyard:{name:'Beam Shipyard',cat:'production',icon:'⊕',color:'#a855f7',
-    desc:'+0.5% ship build speed per level. Starts at level 0.',
-    start:0,max:20,
-    lvls:{  // Same cost structure as Ion Shipyard
-      0:[400,0,0,2,'Build speed +0.5%',{}],1:[700,0,0,3,'Build speed +0.5%',{}],
-      2:[1300,0,0,5,'Build speed +0.5%',{}],3:[2500,0,0,20,'Build speed +0.5%',{}],
-      4:[4900,3300,0,60,'Build speed +0.5%',{}],5:[7400,4900,0,170,'Build speed +0.5%',{}],
-      6:[13200,8800,0,650,'Build speed +0.5%',{}],7:[20400,13600,0,1950,'Build speed +0.5%',{}],
-      8:[37100,24700,0,3500,'Build speed +0.5%',{}],9:[61400,41000,0,5250,'Build speed +0.5%',{}],
-      10:[118900,79300,0,7240,'Build speed +0.5%',{}],
-      11:[null,null,0,null,'Build speed +0.5%',{}],12:[null,null,0,null,'Build speed +0.5%',{}],
-      13:[null,null,0,null,'Build speed +0.5%',{}],14:[null,null,0,null,'Build speed +0.5%',{}],
-      15:[null,null,0,null,'Build speed +0.5%',{}],16:[null,null,0,null,'Build speed +0.5%',{}],
-      17:[751100,500700,0,48510,'Build speed +0.5%',{}],18:[987600,658400,0,66490,'Build speed +0.5%',{}],
-      19:[1280000,855800,0,93780,'Build speed +0.5%',{}],20:[1670000,1110000,0,118200,'Build speed +0.5%',{}],
-    }},
-  cargo_hold:{name:'Cargo Hold',cat:'logistics',icon:'▣',color:'#00b894',
-    desc:'Increases fleet cargo load capacity by +10 per level.',
-    start:1,max:21,
-    lvls:{
-      1:[null,null,0,null,'Fleet load +10',{}],2:[null,null,0,null,'Fleet load +10',{}],
-      3:[null,null,0,null,'Fleet load +10',{}],4:[null,null,0,null,'Fleet load +10',{}],
-      5:[null,null,0,null,'Fleet load +10',{}],6:[null,null,0,null,'Fleet load +10',{}],
-      7:[null,null,0,null,'Fleet load +10',{}],8:[null,null,0,null,'Fleet load +10',{}],
-      9:[null,null,0,null,'Fleet load +10',{}],10:[null,null,0,null,'Fleet load +10',{}],
-      11:[null,null,0,null,'Fleet load +10',{}],12:[null,null,0,null,'Fleet load +10',{}],
-      13:[null,null,0,null,'Fleet load +10',{}],14:[null,null,0,null,'Fleet load +10',{}],
-      15:[null,null,0,null,'Fleet load +10',{}],16:[null,null,0,null,'Fleet load +10',{}],
-      17:[64100,149400,0,16850,'Fleet load +10',{}],
-      18:[84200,196400,0,23090,'Fleet load +10',{}],
-      19:[109500,255300,0,32560,'Fleet load +10, protected 195,360',{}],
-      20:[142800,333000,0,41050,'Fleet load +10',{}],
-      21:[191000,445600,0,51740,'Fleet load +10',{}],
-    }},
-  recruitment_hall:{name:'Recruitment Hall',cat:'support',icon:'◈',color:'#74b9ff',
-    desc:'Reduces recruit cooldown and increases recruit yield/storage.',
-    start:0,max:21,
-    lvls:{
-      0:[0,100,0,2,'Recruit cooldown –12',{}],
-      1:[null,null,0,null,'Recruit speed boost',{}],2:[null,null,0,null,'Recruit speed boost',{}],
-      3:[null,null,0,null,'Recruit speed boost',{}],4:[null,null,0,null,'Recruit speed boost',{}],
-      5:[null,null,0,null,'Recruit speed boost',{}],6:[null,null,0,null,'Recruit speed boost',{}],
-      7:[null,null,0,null,'Recruit speed boost',{}],8:[null,null,0,null,'Recruit speed boost',{}],
-      9:[null,null,0,null,'Recruit speed boost',{}],10:[null,null,0,null,'Recruit speed boost',{}],
-      11:[null,null,0,null,'Recruit speed boost',{}],12:[null,null,0,null,'Recruit speed boost',{}],
-      13:[null,null,0,null,'Recruit speed boost',{}],14:[null,null,0,null,'Recruit speed boost',{}],
-      15:[null,null,0,null,'Recruit speed boost',{}],16:[null,null,0,null,'Recruit speed boost',{}],
-      17:[142300,0,0,11230,'Yield 1260, cap 15,120',{}],
-      18:[null,null,0,null,'Recruit speed boost',{}],
-      19:[null,null,0,null,'Recruit speed boost',{}],
-      20:[317200,0,0,27370,'Yield 1620, cap 19,440',{}],
-      21:[null,null,0,null,'Recruit speed boost',{}],
-    }},
-  repair_cabin:{name:'Repair Cabin',cat:'support',icon:'⊞',color:'#fdcb6e',
-    desc:'Improves fleet repair speed and capacity.',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Repair boost',{}]]))},
-  research:{name:'Research',cat:'support',icon:'⊛',color:'#6c5ce7',
-    desc:'+0.2% research speed per level.',
-    start:0,max:21,
-    lvls:{
-      0:[null,null,0,null,'Research speed +0.2%',{}],
-      1:[null,null,0,null,'Research speed +0.2%',{}],2:[null,null,0,null,'Research speed +0.2%',{}],
-      3:[null,null,0,null,'Research speed +0.2%',{}],4:[null,null,0,null,'Research speed +0.2%',{}],
-      5:[null,null,0,null,'Research speed +0.2%',{}],6:[null,null,0,null,'Research speed +0.2%',{}],
-      7:[null,null,0,null,'Research speed +0.2%',{}],8:[null,null,0,null,'Research speed +0.2%',{}],
-      9:[null,null,0,null,'Research speed +0.2%',{}],10:[null,null,0,null,'Research speed +0.2%',{}],
-      11:[null,null,0,null,'Research speed +0.2%',{}],12:[null,null,0,null,'Research speed +0.2%',{}],
-      13:[null,null,0,null,'Research speed +0.2%',{}],14:[null,null,0,null,'Research speed +0.2%',{}],
-      15:[null,null,0,null,'Research speed +0.2%',{}],16:[null,null,0,null,'Research speed +0.2%',{}],
-      17:[320100,746800,0,84220,'Research speed +0.2%',{}],
-      18:[420900,982000,0,115420,'Research speed +0.2%',{}],
-      19:[null,null,0,null,'Research speed +0.2%',{}],
-      20:[713600,1660000,0,205210,'Research speed +0.2%',{}],
-      21:[null,null,0,null,'Research speed +0.2%',{}],
-    }},
-  water:{name:'Water',cat:'support',icon:'◈',color:'#4fc3f7',
-    desc:'Increases water production and storage.',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Water production boost',{}]]))},
-  smelting:{name:'Smelting',cat:'support',icon:'⬡',color:'#e17055',
-    desc:'Increases metal smelting yield and storage capacity.',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Smelting yield boost',{}]]))},
-  food:{name:'Food',cat:'support',icon:'◆',color:'#55efc4',
-    desc:'Increases food production for crew.',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Food production boost',{}]]))},
-  crew_cabin_1:{name:'Crew Cabin 1',cat:'support',icon:'⊡',color:'#b2bec3',
-    desc:'Increases crew capacity (cabin 1).',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Crew capacity boost',{}]]))},
-  crew_cabin_2:{name:'Crew Cabin 2',cat:'support',icon:'⊠',color:'#b2bec3',
-    desc:'Increases crew capacity (cabin 2).',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Crew capacity boost',{}]]))},
-  self_defense_1:{name:'Self Defense 1',cat:'combat',icon:'⊗',color:'#ff7675',
-    desc:'Boosts base defense stats (turret 1).',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Defense boost',{}]]))},
-  self_defense_2:{name:'Self Defense 2',cat:'combat',icon:'⊘',color:'#ff7675',
-    desc:'Boosts base defense stats (turret 2).',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Defense boost',{}]]))},
-  guild_liaison:{name:'Guild Liaison',cat:'support',icon:'⊞',color:'#fd79a8',
-    desc:'Enables guild office, unlocks higher-tier Main Cannon upgrades.',
-    start:1,max:21,
-    lvls:Object.fromEntries(Array.from({length:21},(_,i)=>[i+1,[null,null,0,null,'Guild office access',{}]]))},
-};
+    function saveState() {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    }
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (raw) state = JSON.parse(raw);
+        // Ensure all buildings have a level
+        Object.keys(BUILDINGS).forEach(k => {
+          if (state.levels[k] == null) state.levels[k] = BUILDINGS[k].start;
+        });
+      } catch (e) { console.warn('Could not load state', e); }
+    }
 
-const REGIONS = {
-  'Border Region 1':{color:'#74b9ff',systems:['Kahlid(1)','Panalis(1)','Koshil(1)','Canopus(2)','Taylor(2)','Askat(2)','Gail(3)','Nirman(3)','Arianne(4)']},
-  'Border Region 2':{color:'#81ecec',systems:['Sanekis(1)','Marus(1)','Hälle(1)','Finn(2)','Ghonas(2)','Sare(3)','Korvas(2)','Sain(3)','Hoare(4)']},
-  'Border Region 3':{color:'#a29bfe',systems:['Vos(1)','Nandes(1)','Sku(1)','Liji(2)','Ayn(2)','Berg(2)','Ronna(3)','Salva(3)','Hadil(4)']},
-  'Border Region 4':{color:'#55efc4',systems:['Kylen(1)','Tren(1)','Pike(1)','Yurwick(2)','Fern(2)','Palma(2)','Sass(3)','Wayshun(3)','Izar(4)']},
-  'Core Region 1':{color:'#fdcb6e',systems:['Oden(5)','Taner(5)','Xexis(5)','Wolf(5)','Brink(6)','Dres(6)','Elvan(7)']},
-  'Core Region 2':{color:'#e17055',systems:['Garris(5)','Hannekis(5)','Kiril(5)','Aer(5)','Tronne(6)','Manekis(6)','Narvon(7)']},
-  'Central Region':{color:'#d63031',systems:['Acrifon(8)','Dax(8)','Yeregania(8)','Xarnas(9)']},
-  'PvP / Red Zones':{color:'#ff7675',systems:['Kruger(4)','Cerno(4)','Sphinx(4)','Kanvo(4)']},
-  'Abyss Region':{color:'#6c5ce7',systems:['Farnick(8)','Acrifon(8)','Dax(8)','Yeregania(8)','Xarnas(9)']},
-};
+    function setLevel(key, lvl) {
+      const b = BUILDINGS[key];
+      lvl = Math.max(b.start, Math.min(b.max, lvl));
+      state.levels[key] = lvl;
+      saveState();
+      renderDashboard();
+      renderAffordGrid();
+      renderSummary();
+    }
+    function setGoal(key, lvl) {
+      const b = BUILDINGS[key];
+      if (!lvl || lvl <= state.levels[key]) { delete state.goals[key]; }
+      else { state.goals[key] = Math.min(b.max, Math.max(b.start, parseInt(lvl) || 0)); }
+      saveState();
+      renderDashboard();
+      renderSummary();
+    }
+    function clearGoals() {
+      state.goals = {};
+      saveState();
+      renderAll();
+      showToast('Goals cleared');
+    }
 
-// ============================================================
-// STATE
-// ============================================================
-const SAVE_KEY = 'fgf_tracker_v2';
-let state = {
-  levels: {},    // {buildingKey: currentLevel}
-  goals: {},     // {buildingKey: goalLevel}
-  resources: { metal:0, water:0, coins:0 },
-  systems: {},   // {systemName: true}
-};
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function fmt(n) {
+      if (n == null) return '?';
+      if (n >= 1000000) return (n / 1000000).toFixed(2).replace(/\.?0+$/, '') + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.?0+$/, '') + 'K';
+      return n.toLocaleString();
+    }
+    function fmtTime(sec) {
+      if (sec == null) return '?';
+      if (sec < 60) return sec + 's';
+      const d = Math.floor(sec / 86400), h = Math.floor((sec % 86400) / 3600),
+        m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      if (d > 0) return `${d}d ${h}h ${m}m`;
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m}m ${s}s`;
+    }
+    function costBetween(key, from, to) {
+      const lvls = BUILDINGS[key].lvls;
+      let metal = 0, water = 0, coins = 0, time = 0, hasNull = false;
+      for (let i = from + 1; i <= to; i++) {
+        const l = lvls[i];
+        if (!l) { continue; }
+        if (l[0] == null) { hasNull = true; continue; }
+        metal += l[0]; water += l[1]; coins += l[2]; time += l[3] || 0;
+      }
+      return { metal, water, coins, time, hasNull };
+    }
+    function getLevelData(key, lvl) {
+      return BUILDINGS[key].lvls[lvl];
+    }
+    function nextLevelData(key) {
+      const cur = state.levels[key];
+      const b = BUILDINGS[key];
+      if (cur >= b.max) return null;
+      return getLevelData(key, cur + 1);
+    }
+    function canAffordLevel(key) {
+      const nd = nextLevelData(key);
+      if (!nd || nd[0] == null) return 'nodata';
+      return (state.resources.metal >= nd[0] && state.resources.water >= nd[1] &&
+        state.resources.coins >= nd[2]) ? 'yes' : 'no';
+    }
 
-function saveState() {
-  localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-}
-function loadState() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) state = JSON.parse(raw);
-    // Ensure all buildings have a level
-    Object.keys(BUILDINGS).forEach(k => {
-      if (state.levels[k] == null) state.levels[k] = BUILDINGS[k].start;
-    });
-  } catch(e) { console.warn('Could not load state', e); }
-}
+    // ============================================================
+    // RENDER: DASHBOARD
+    // ============================================================
+    function renderDashboard() {
+      const grid = document.getElementById('buildings-grid');
+      const keys = Object.keys(BUILDINGS);
+      const badge = document.getElementById('buildings-badge');
+      const maxed = keys.filter(k => state.levels[k] >= BUILDINGS[k].max).length;
+      badge.textContent = `${maxed}/${keys.length} maxed`;
 
-function setLevel(key, lvl) {
-  const b = BUILDINGS[key];
-  lvl = Math.max(b.start, Math.min(b.max, lvl));
-  state.levels[key] = lvl;
-  saveState();
-  renderDashboard();
-  renderAffordGrid();
-  renderSummary();
-}
-function setGoal(key, lvl) {
-  const b = BUILDINGS[key];
-  if (!lvl || lvl <= state.levels[key]) { delete state.goals[key]; }
-  else { state.goals[key] = Math.min(b.max, Math.max(b.start, parseInt(lvl)||0)); }
-  saveState();
-  renderDashboard();
-  renderSummary();
-}
-function clearGoals() {
-  state.goals = {};
-  saveState();
-  renderAll();
-  showToast('Goals cleared');
-}
+      grid.innerHTML = keys.map(key => {
+        const b = BUILDINGS[key];
+        const cur = state.levels[key] ?? b.start;
+        const goal = state.goals[key];
+        const isMaxed = cur >= b.max;
+        const progress = (cur - b.start) / (b.max - b.start) * 100;
+        const nd = nextLevelData(key);
+        const afford = canAffordLevel(key);
+        const costText = nd && nd[0] != null
+          ? `<span class="cost-val">${fmt(nd[0])}</span>M / <span class="cost-val" style="color:#4fc3f7">${fmt(nd[1])}</span>W`
+          : nd ? '(no data)' : '— maxed';
+        const affordBadge = isMaxed ? '' :
+          afford === 'yes' ? '<span class="b-afford yes">✓ CAN AFFORD</span>' :
+            afford === 'no' ? '<span class="b-afford no">✗ NEED MORE</span>' :
+              '<span class="b-afford nodata">? NO DATA</span>';
 
-// ============================================================
-// HELPERS
-// ============================================================
-function fmt(n) {
-  if (n == null) return '?';
-  if (n >= 1000000) return (n/1000000).toFixed(2).replace(/\.?0+$/,'')+'M';
-  if (n >= 1000) return (n/1000).toFixed(1).replace(/\.?0+$/,'')+'K';
-  return n.toLocaleString();
-}
-function fmtTime(sec) {
-  if (sec == null) return '?';
-  if (sec < 60) return sec+'s';
-  const d=Math.floor(sec/86400), h=Math.floor((sec%86400)/3600),
-        m=Math.floor((sec%3600)/60), s=sec%60;
-  if (d>0) return `${d}d ${h}h ${m}m`;
-  if (h>0) return `${h}h ${m}m`;
-  return `${m}m ${s}s`;
-}
-function costBetween(key, from, to) {
-  const lvls = BUILDINGS[key].lvls;
-  let metal=0,water=0,coins=0,time=0,hasNull=false;
-  for(let i=from+1; i<=to; i++){
-    const l=lvls[i];
-    if(!l){continue;}
-    if(l[0]==null){hasNull=true;continue;}
-    metal+=l[0];water+=l[1];coins+=l[2];time+=l[3]||0;
-  }
-  return {metal,water,coins,time,hasNull};
-}
-function getLevelData(key, lvl) {
-  return BUILDINGS[key].lvls[lvl];
-}
-function nextLevelData(key) {
-  const cur = state.levels[key];
-  const b = BUILDINGS[key];
-  if (cur >= b.max) return null;
-  return getLevelData(key, cur + 1);
-}
-function canAffordLevel(key) {
-  const nd = nextLevelData(key);
-  if (!nd || nd[0]==null) return 'nodata';
-  return (state.resources.metal >= nd[0] && state.resources.water >= nd[1] &&
-          state.resources.coins >= nd[2]) ? 'yes' : 'no';
-}
-
-// ============================================================
-// RENDER: DASHBOARD
-// ============================================================
-function renderDashboard() {
-  const grid = document.getElementById('buildings-grid');
-  const keys = Object.keys(BUILDINGS);
-  const badge = document.getElementById('buildings-badge');
-  const maxed = keys.filter(k=>state.levels[k]>=BUILDINGS[k].max).length;
-  badge.textContent = `${maxed}/${keys.length} maxed`;
-
-  grid.innerHTML = keys.map(key => {
-    const b = BUILDINGS[key];
-    const cur = state.levels[key] ?? b.start;
-    const goal = state.goals[key];
-    const isMaxed = cur >= b.max;
-    const progress = (cur - b.start) / (b.max - b.start) * 100;
-    const nd = nextLevelData(key);
-    const afford = canAffordLevel(key);
-    const costText = nd && nd[0]!=null
-      ? `<span class="cost-val">${fmt(nd[0])}</span>M / <span class="cost-val" style="color:#4fc3f7">${fmt(nd[1])}</span>W`
-      : nd ? '(no data)' : '— maxed';
-    const affordBadge = isMaxed ? '' :
-      afford==='yes' ? '<span class="b-afford yes">✓ CAN AFFORD</span>' :
-      afford==='no' ? '<span class="b-afford no">✗ NEED MORE</span>' :
-      '<span class="b-afford nodata">? NO DATA</span>';
-
-    return `<div class="b-card${isMaxed?' maxed':''}" onclick="openDetail('${key}')">
+        return `<div class="b-card${isMaxed ? ' maxed' : ''}" onclick="openDetail('${key}')">
       <div class="b-card-top">
         <div class="b-icon" style="background:${b.color}22;color:${b.color}">${b.icon}</div>
         <div>
@@ -719,58 +1591,58 @@ function renderDashboard() {
       </div>
       <div class="b-lvl-row">
         <div class="b-lvl">${cur}</div>
-        <div class="b-lvl-label">/ ${b.max}${goal?` → <span class="b-goal">${goal}</span>`:''}</div>
+        <div class="b-lvl-label">/ ${b.max}${goal ? ` → <span class="b-goal">${goal}</span>` : ''}</div>
       </div>
       <div class="b-progress">
-        <div class="b-progress-bar" style="width:${progress}%;background:${isMaxed?'var(--green)':b.color}"></div>
+        <div class="b-progress-bar" style="width:${progress}%;background:${isMaxed ? 'var(--green)' : b.color}"></div>
       </div>
-      <div class="b-next-cost">${isMaxed?'<span style="color:var(--green)">✓ MAX LEVEL</span>':costText}</div>
+      <div class="b-next-cost">${isMaxed ? '<span style="color:var(--green)">✓ MAX LEVEL</span>' : costText}</div>
       ${affordBadge}
       <div class="lvl-controls" onclick="event.stopPropagation()">
-        <button class="lvl-btn" onclick="setLevel('${key}',${cur-1})">−</button>
+        <button class="lvl-btn" onclick="setLevel('${key}',${cur - 1})">−</button>
         <span class="lvl-display">${cur}</span>
-        <button class="lvl-btn" onclick="setLevel('${key}',${cur+1})">+</button>
+        <button class="lvl-btn" onclick="setLevel('${key}',${cur + 1})">+</button>
       </div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-// ============================================================
-// RENDER: DETAIL PANEL
-// ============================================================
-function openDetail(key) {
-  const b = BUILDINGS[key];
-  const cur = state.levels[key] ?? b.start;
-  const goal = state.goals[key];
+    // ============================================================
+    // RENDER: DETAIL PANEL
+    // ============================================================
+    function openDetail(key) {
+      const b = BUILDINGS[key];
+      const cur = state.levels[key] ?? b.start;
+      const goal = state.goals[key];
 
-  const rows = Object.entries(b.lvls).map(([lvlStr,data])=>{
-    const lvl = parseInt(lvlStr);
-    const isCur = lvl===cur;
-    const isFuture = goal && lvl>cur && lvl<=goal;
-    const isPast = lvl<cur;
-    const hasData = data[0]!==null;
-    let cls = isPast?'past':isCur?'current':isFuture?'future':'';
-    if(!hasData && !isPast) cls += ' no-data';
-    const reqs = Object.entries(data[5]||{}).map(([k,v])=>`${k} ${v}`).join(', ');
-    return `<div class="dp-lvl-row ${cls}">
-      <span class="dp-lvl-num">${lvl}${isCur?' ◄':''}</span>
-      <span class="dp-cost-m">${hasData?fmt(data[0]):'—'}</span>
-      <span class="dp-cost-w">${hasData?fmt(data[1]):'—'}</span>
+      const rows = Object.entries(b.lvls).map(([lvlStr, data]) => {
+        const lvl = parseInt(lvlStr);
+        const isCur = lvl === cur;
+        const isFuture = goal && lvl > cur && lvl <= goal;
+        const isPast = lvl < cur;
+        const hasData = data[0] !== null;
+        let cls = isPast ? 'past' : isCur ? 'current' : isFuture ? 'future' : '';
+        if (!hasData && !isPast) cls += ' no-data';
+        const reqs = Object.entries(data[5] || {}).map(([k, v]) => `${k} ${v}`).join(', ');
+        return `<div class="dp-lvl-row ${cls}">
+      <span class="dp-lvl-num">${lvl}${isCur ? ' ◄' : ''}</span>
+      <span class="dp-cost-m">${hasData ? fmt(data[0]) : '—'}</span>
+      <span class="dp-cost-w">${hasData ? fmt(data[1]) : '—'}</span>
       <span class="dp-time">${fmtTime(data[3])}</span>
       <div>
-        <div class="dp-unlocks">${data[4]||''}</div>
-        ${reqs?`<div class="dp-reqs">Req: ${reqs}</div>`:''}
+        <div class="dp-unlocks">${data[4] || ''}</div>
+        ${reqs ? `<div class="dp-reqs">Req: ${reqs}</div>` : ''}
       </div>
-      ${!isPast?`<button class="dp-set-btn" onclick="setLevel('${key}',${lvl});setGoal('${key}',${lvl>cur?lvl:0})">Set lvl ${lvl}</button>`:'<span></span>'}
+      ${!isPast ? `<button class="dp-set-btn" onclick="setLevel('${key}',${lvl});setGoal('${key}',${lvl > cur ? lvl : 0})">Set lvl ${lvl}</button>` : '<span></span>'}
     </div>`;
-  }).join('');
+      }).join('');
 
-  document.getElementById('detail-panel').innerHTML = `
+      document.getElementById('detail-panel').innerHTML = `
     <div class="dp-header">
       <div>
         <div class="dp-title" style="color:${b.color}">${b.icon} ${b.name}</div>
         <div class="dp-desc">${b.desc}</div>
-        ${goal?`<div style="font-family:var(--mono);font-size:.75rem;margin-top:.4rem;color:var(--gold)">Goal: Level ${goal} — ${fmtTime(costBetween(key,cur,goal).time)} remaining</div>`:''}
+        ${goal ? `<div style="font-family:var(--mono);font-size:.75rem;margin-top:.4rem;color:var(--gold)">Goal: Level ${goal} — ${fmtTime(costBetween(key, cur, goal).time)} remaining</div>` : ''}
       </div>
       <button class="dp-close" onclick="closeDetail()">✕</button>
     </div>
@@ -779,25 +1651,25 @@ function openDetail(key) {
     </div>
     <div class="dp-levels">${rows}</div>`;
 
-  document.getElementById('detail-overlay').classList.add('open');
-}
-function closeDetail(e) {
-  if (e && e.target !== document.getElementById('detail-overlay')) return;
-  document.getElementById('detail-overlay').classList.remove('open');
-  renderDashboard();
-}
+      document.getElementById('detail-overlay').classList.add('open');
+    }
+    function closeDetail(e) {
+      if (e && e.target !== document.getElementById('detail-overlay')) return;
+      document.getElementById('detail-overlay').classList.remove('open');
+      renderDashboard();
+    }
 
-// ============================================================
-// RENDER: PLANNER
-// ============================================================
-function renderPlanner() {
-  const list = document.getElementById('planner-list');
-  list.innerHTML = Object.entries(BUILDINGS).map(([key,b])=>{
-    const cur = state.levels[key] ?? b.start;
-    const goal = state.goals[key] || '';
-    const {metal,water,coins,time,hasNull} = goal ? costBetween(key,cur,goal) : {metal:0,water:0,coins:0,time:0};
-    const hasGoal = !!goal;
-    return `<div class="plan-card${hasGoal?'':' no-goal'}">
+    // ============================================================
+    // RENDER: PLANNER
+    // ============================================================
+    function renderPlanner() {
+      const list = document.getElementById('planner-list');
+      list.innerHTML = Object.entries(BUILDINGS).map(([key, b]) => {
+        const cur = state.levels[key] ?? b.start;
+        const goal = state.goals[key] || '';
+        const { metal, water, coins, time, hasNull } = goal ? costBetween(key, cur, goal) : { metal: 0, water: 0, coins: 0, time: 0 };
+        const hasGoal = !!goal;
+        return `<div class="plan-card${hasGoal ? '' : ' no-goal'}">
       <div>
         <div class="plan-name">${b.name}</div>
         <span class="tag ${b.cat}">${b.cat}</span>
@@ -806,76 +1678,76 @@ function renderPlanner() {
         <div class="plan-lvl-info">
           <span class="plan-cur">${cur}</span>
           <span class="plan-arrow">→</span>
-          <span class="plan-goal">${goal||'—'}</span>
+          <span class="plan-goal">${goal || '—'}</span>
           <span style="color:var(--muted);font-size:.7rem;margin-left:.3rem">/ ${b.max}</span>
         </div>
-        ${hasGoal?`<div class="plan-costs">
-          <span style="color:#ff8a65">⬡ ${fmt(metal)}${hasNull?'+?':''}</span>
-          <span style="color:#4fc3f7">◈ ${fmt(water)}${hasNull?'+?':''}</span>
+        ${hasGoal ? `<div class="plan-costs">
+          <span style="color:#ff8a65">⬡ ${fmt(metal)}${hasNull ? '+?' : ''}</span>
+          <span style="color:#4fc3f7">◈ ${fmt(water)}${hasNull ? '+?' : ''}</span>
           <span style="color:var(--muted)">⏱ ${fmtTime(time)}</span>
-        </div>`:'<div class="plan-costs" style="color:var(--muted);font-size:.68rem">no goal set</div>'}
+        </div>`: '<div class="plan-costs" style="color:var(--muted);font-size:.68rem">no goal set</div>'}
       </div>
       <div>
-        <input class="plan-goal-input" type="number" value="${goal}" min="${cur+1}" max="${b.max}"
+        <input class="plan-goal-input" type="number" value="${goal}" min="${cur + 1}" max="${b.max}"
                placeholder="—" onchange="setGoal('${key}',this.value)">
       </div>
     </div>`;
-  }).join('');
-  renderSummary();
-}
+      }).join('');
+      renderSummary();
+    }
 
-function renderSummary() {
-  let totalMetal=0,totalWater=0,totalCoins=0,totalTime=0,hasNull=false;
-  Object.entries(state.goals).forEach(([key,goal])=>{
-    const cur = state.levels[key]??BUILDINGS[key].start;
-    const c = costBetween(key,cur,goal);
-    totalMetal+=c.metal; totalWater+=c.water; totalCoins+=c.coins;
-    totalTime+=c.time; if(c.hasNull) hasNull=true;
-  });
-  const hm=state.resources.metal, hw=state.resources.water, hc=state.resources.coins;
-  const div = document.getElementById('summary-res');
-  div.innerHTML = [
-    {label:'Metal',cls:'metal',total:totalMetal,have:hm,col:'#ff8a65',icon:'⬡'},
-    {label:'Water',cls:'water',total:totalWater,have:hw,col:'#4fc3f7',icon:'◈'},
-    {label:'Coins',cls:'coins',total:totalCoins,have:hc,col:'var(--gold)',icon:'◆'},
-  ].map(r=>`
+    function renderSummary() {
+      let totalMetal = 0, totalWater = 0, totalCoins = 0, totalTime = 0, hasNull = false;
+      Object.entries(state.goals).forEach(([key, goal]) => {
+        const cur = state.levels[key] ?? BUILDINGS[key].start;
+        const c = costBetween(key, cur, goal);
+        totalMetal += c.metal; totalWater += c.water; totalCoins += c.coins;
+        totalTime += c.time; if (c.hasNull) hasNull = true;
+      });
+      const hm = state.resources.metal, hw = state.resources.water, hc = state.resources.coins;
+      const div = document.getElementById('summary-res');
+      div.innerHTML = [
+        { label: 'Metal', cls: 'metal', total: totalMetal, have: hm, col: '#ff8a65', icon: '⬡' },
+        { label: 'Water', cls: 'water', total: totalWater, have: hw, col: '#4fc3f7', icon: '◈' },
+        { label: 'Coins', cls: 'coins', total: totalCoins, have: hc, col: 'var(--gold)', icon: '◆' },
+      ].map(r => `
     <div class="summary-res-item">
       <span class="summary-res-label">${r.icon} ${r.label}</span>
       <div style="text-align:right">
-        <div class="summary-res-val ${r.cls}" style="color:${r.col}">${fmt(r.total)}${hasNull?'+':''}
-          ${r.total>0?`<span style="font-size:.65rem;color:var(--muted)"> needed</span>`:''}
+        <div class="summary-res-val ${r.cls}" style="color:${r.col}">${fmt(r.total)}${hasNull ? '+' : ''}
+          ${r.total > 0 ? `<span style="font-size:.65rem;color:var(--muted)"> needed</span>` : ''}
         </div>
         <div class="summary-res-have">Have: ${fmt(r.have)}</div>
-        ${r.total>0?`<div class="summary-res-need ${r.have>=r.total?'ok':'short'}">${r.have>=r.total?'✓ Enough':'✗ Short '+fmt(r.total-r.have)}</div>`:''}
+        ${r.total > 0 ? `<div class="summary-res-need ${r.have >= r.total ? 'ok' : 'short'}">${r.have >= r.total ? '✓ Enough' : '✗ Short ' + fmt(r.total - r.have)}</div>` : ''}
       </div>
     </div>`).join('');
 
-  const goalCount = Object.keys(state.goals).length;
-  document.getElementById('summary-time').innerHTML = goalCount>0
-    ? `<div class="summary-time-label">TOTAL UPGRADE TIME</div>
-       <div class="summary-time-val">${fmtTime(totalTime)}${hasNull?' + unknown':''}</div>
-       <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem">${goalCount} building goal${goalCount>1?'s':''} active</div>`
-    : `<div class="summary-time-label">No goals set</div>
+      const goalCount = Object.keys(state.goals).length;
+      document.getElementById('summary-time').innerHTML = goalCount > 0
+        ? `<div class="summary-time-label">TOTAL UPGRADE TIME</div>
+       <div class="summary-time-val">${fmtTime(totalTime)}${hasNull ? ' + unknown' : ''}</div>
+       <div style="font-size:.65rem;color:var(--muted);margin-top:.3rem">${goalCount} building goal${goalCount > 1 ? 's' : ''} active</div>`
+        : `<div class="summary-time-label">No goals set</div>
        <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">Use the fields above to set target levels</div>`;
-}
+    }
 
-// ============================================================
-// RENDER: RESOURCES / AFFORD
-// ============================================================
-function renderAffordGrid() {
-  const grid = document.getElementById('afford-grid');
-  const affordable = Object.entries(BUILDINGS).filter(([key])=>canAffordLevel(key)==='yes');
-  if(!affordable.length){
-    grid.innerHTML='<div class="empty-state">No upgrades affordable with current resources</div>';
-    return;
-  }
-  grid.innerHTML = affordable.map(([key,b])=>{
-    const cur = state.levels[key]??b.start;
-    const nd = nextLevelData(key);
-    return `<div class="afford-row can">
+    // ============================================================
+    // RENDER: RESOURCES / AFFORD
+    // ============================================================
+    function renderAffordGrid() {
+      const grid = document.getElementById('afford-grid');
+      const affordable = Object.entries(BUILDINGS).filter(([key]) => canAffordLevel(key) === 'yes');
+      if (!affordable.length) {
+        grid.innerHTML = '<div class="empty-state">No upgrades affordable with current resources</div>';
+        return;
+      }
+      grid.innerHTML = affordable.map(([key, b]) => {
+        const cur = state.levels[key] ?? b.start;
+        const nd = nextLevelData(key);
+        return `<div class="afford-row can">
       <div>
         <div class="afford-name">${b.name}</div>
-        <div style="font-size:.65rem;color:var(--muted)">Lvl ${cur} → ${cur+1}</div>
+        <div style="font-size:.65rem;color:var(--muted)">Lvl ${cur} → ${cur + 1}</div>
       </div>
       <div class="afford-cost">
         <span style="color:#ff8a65">⬡ ${fmt(nd[0])}</span>
@@ -883,103 +1755,104 @@ function renderAffordGrid() {
         <span style="color:var(--muted)"> ⏱ ${fmtTime(nd[3])}</span>
       </div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-// ============================================================
-// RENDER: REGIONS
-// ============================================================
-function renderRegions() {
-  const grid = document.getElementById('regions-grid');
-  grid.innerHTML = Object.entries(REGIONS).map(([name,r])=>{
-    const systems = r.systems.map(sys=>{
-      const done = state.systems[sys];
-      return `<div class="system-row" onclick="toggleSystem('${sys}')">
-        <div class="system-check${done?' done':''}"></div>
+    // ============================================================
+    // RENDER: REGIONS
+    // ============================================================
+    function renderRegions() {
+      const grid = document.getElementById('regions-grid');
+      grid.innerHTML = Object.entries(REGIONS).map(([name, r]) => {
+        const systems = r.systems.map(sys => {
+          const done = state.systems[sys];
+          return `<div class="system-row" onclick="toggleSystem('${sys}')">
+        <div class="system-check${done ? ' done' : ''}"></div>
         <span>${sys.split('(')[0]}</span>
-        <span class="system-tier">Tier ${sys.match(/\((\d+)\)/)?.[1]||'?'}</span>
+        <span class="system-tier">Tier ${sys.match(/\((\d+)\)/)?.[1] || '?'}</span>
       </div>`;
-    }).join('');
-    const total=r.systems.length, done=r.systems.filter(s=>state.systems[s]).length;
-    return `<div class="region-card">
+        }).join('');
+        const total = r.systems.length, done = r.systems.filter(s => state.systems[s]).length;
+        return `<div class="region-card">
       <div class="region-title" style="color:${r.color}">${name}
         <span style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-left:.4rem">${done}/${total}</span>
       </div>
       <div class="region-systems">${systems}</div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-function toggleSystem(sys) {
-  state.systems[sys] = !state.systems[sys];
-  saveState();
-  renderRegions();
-}
+    function toggleSystem(sys) {
+      state.systems[sys] = !state.systems[sys];
+      saveState();
+      renderRegions();
+    }
 
-// ============================================================
-// RESOURCE SYNC
-// ============================================================
-function syncRes(type, val) {
-  state.resources[type] = parseInt(val)||0;
-  document.getElementById('r-'+type).value = state.resources[type]||'';
-  document.getElementById('big-'+type).value = state.resources[type]||'';
-  saveState();
-  renderDashboard();
-  renderAffordGrid();
-  renderSummary();
-}
+    // ============================================================
+    // RESOURCE SYNC
+    // ============================================================
+    function syncRes(type, val) {
+      state.resources[type] = parseInt(val) || 0;
+      document.getElementById('r-' + type).value = state.resources[type] || '';
+      document.getElementById('big-' + type).value = state.resources[type] || '';
+      saveState();
+      renderDashboard();
+      renderAffordGrid();
+      renderSummary();
+    }
 
-function initResInputs() {
-  ['metal','water','coins'].forEach(t=>{
-    const val = state.resources[t]||0;
-    document.getElementById('r-'+t).value = val||'';
-    document.getElementById('big-'+t).value = val||'';
-    document.getElementById('r-'+t).addEventListener('change', e=>syncRes(t,e.target.value));
-    document.getElementById('big-'+t).addEventListener('change', e=>syncRes(t,e.target.value));
-  });
-}
+    function initResInputs() {
+      ['metal', 'water', 'coins'].forEach(t => {
+        const val = state.resources[t] || 0;
+        document.getElementById('r-' + t).value = val || '';
+        document.getElementById('big-' + t).value = val || '';
+        document.getElementById('r-' + t).addEventListener('change', e => syncRes(t, e.target.value));
+        document.getElementById('big-' + t).addEventListener('change', e => syncRes(t, e.target.value));
+      });
+    }
 
-// ============================================================
-// NAV
-// ============================================================
-function showView(id) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+id).classList.add('active');
-  event.target.classList.add('active');
-  if(id==='planner') renderPlanner();
-  if(id==='resources') renderAffordGrid();
-  if(id==='regions') renderRegions();
-}
+    // ============================================================
+    // NAV
+    // ============================================================
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-' + id).classList.add('active');
+      event.target.classList.add('active');
+      if (id === 'planner') renderPlanner();
+      if (id === 'resources') renderAffordGrid();
+      if (id === 'regions') renderRegions();
+    }
 
-function renderAll() {
-  renderDashboard();
-  renderSummary();
-}
+    function renderAll() {
+      renderDashboard();
+      renderSummary();
+    }
 
-// ============================================================
-// TOAST
-// ============================================================
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
-}
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
 
-// ============================================================
-// KEYBOARD SHORTCUT: close detail on Escape
-// ============================================================
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape') document.getElementById('detail-overlay').classList.remove('open');
-});
+    // ============================================================
+    // KEYBOARD SHORTCUT: close detail on Escape
+    // ============================================================
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('detail-overlay').classList.remove('open');
+    });
 
-// ============================================================
-// INIT
-// ============================================================
-loadState();
-initResInputs();
-renderAll();
-</script>
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadState();
+    initResInputs();
+    renderAll();
+  </script>
 </body>
+
 </html>
