@@ -1,3 +1,3 @@
 # USAGE
-- download
+- download `foundation-tracker.html`
 - open in browser
